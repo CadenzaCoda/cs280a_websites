@@ -12,11 +12,15 @@
     <link rel="stylesheet" href="assets/css/main.css"/>
 
     <script type="text/x-mathjax-config">
-        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+        MathJax.Hub.Config({
+          tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+          }
+        });
     </script>
-    <script type="text/javascript"
-            src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            type="text/javascript"></script>
 </head>
 <body class="is-preload">
 
@@ -78,7 +82,7 @@
                     Note that we assume the image matrix $A$ are infinitely zero-padded outside the borders.
                 </p>
 
-                 <header class="main">
+                <header class="main">
                     <div id="algorithm"></div>
                     <h1>Algorithm</h1>
                 </header>
@@ -185,8 +189,10 @@
                 <p>
                     Even though the algorithm successfully matched all given examples, the algorithm has limitations
                     when it comes to the details.
-                    This is especially prominent in scenes depicting peoples, one example being the image "three generations".
-                    One possible explanation is that the three channels may not have been taken at exactly the same moment,
+                    This is especially prominent in scenes depicting peoples, one example being the image "three
+                    generations".
+                    One possible explanation is that the three channels may not have been taken at exactly the same
+                    moment,
                     and the small movements by the models caused a mismatch across channels.
                     Since the models only take up a limited portion of the image, and the algorithm looks for the best
                     match across the entire image, there would likely be more visual artifacts around the models.
@@ -200,19 +206,20 @@
                 </header>
 
                 <p>
-                    <ul>
-                        <li><a href="https://en.wikipedia.org/w/index.php?title=Canny_edge_detector&oldid=1235653606">Canny Edge Detector</a></li>
-                    </ul>
+                <ul>
+                    <li><a href="https://en.wikipedia.org/w/index.php?title=Canny_edge_detector&oldid=1235653606">Canny
+                        Edge Detector</a></li>
+                </ul>
                 </p>
 
                 <p>
                     HTML Templates:
                 </p>
                 <p>
-                    <ul>
-                        <li><a href="https://html5up.net/multiverse">Multiverse by HTML5UP</a></li>
-                        <li><a href="https://html5up.net/editorial">Editorial by HTML5UP</a></li>
-                    </ul>
+                <ul>
+                    <li><a href="https://html5up.net/multiverse">Multiverse by HTML5UP</a></li>
+                    <li><a href="https://html5up.net/editorial">Editorial by HTML5UP</a></li>
+                </ul>
                 </p>
             </section>
         </div>
