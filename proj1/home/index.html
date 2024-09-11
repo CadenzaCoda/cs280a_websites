@@ -1,0 +1,288 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+<head>
+    <title>Project 1 - Colorizing the Prokudin-Gorskii photo collection</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="assets/css/main.css"/>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+    </script>
+    <script type="text/javascript"
+            src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+</head>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
+
+            <!-- Header -->
+            <header id="header">
+                <a href="index_old.html" class="logo"><strong>Project 1</strong> Colorizing the Prokudin-Gorskii photo
+                    collection</a>
+            </header>
+
+            <!-- Content -->
+            <section id="content">
+                <header class="main">
+                    <div id="description"></div>
+                    <h1>Project Description</h1>
+                </header>
+
+                <p>
+                    <span class="image right"><img src="images/project_overview.jpg" alt=""/></span>
+                    The earliest colored photos in the world dates back to as early as 1907, by a brilliant photographer
+                    named <a href="http://en.wikipedia.org/wiki/Prokudin-Gorskii">Sergei Mikhailovich
+                    Prokudin-Gorskii</a>. His idea was to capture images through a red, a green, and a blue filter
+                    respectively, in the hope that these images would be reconstructed into colored images in the
+                    future.
+                </p>
+
+                <p>
+                    This project aims at reconstructing colored images from Prokudin-Gorskii's work.
+                    Given a set of grayscale images that consists of the photos taken through the filters, the goal is
+                    to align the channels in a way that would induce as little visual artifacts as possible. </p>
+
+                <header class="main">
+                    <div id="objective"></div>
+                    <h1>Objective</h1>
+                </header>
+
+                <p>
+                    Let's denote the two images we're trying to match as $A \in \mathcal{R}^{m \times n}$ and
+                    $B \in \mathcal{R}^{m \times n}$, where all elements in $A$ and $B$ reside in the range $[0, 1]$.
+                </p>
+                <p>
+                    The goal is to find the best linear translation that would match the channels.
+                    Assume the channels are offset only by some linear translation (i.e., without rotation).
+                    In this project, the similarity of two images are characterized by the Normalized Cross Correlation
+                    (NCC) criteria.
+                <p>$$\textrm{arg}\max_{\delta_i, \delta_j} \frac{\mathrm{vec}(A^{'}) \cdot \mathrm{vec}(B)}{\Vert A^{'}
+                    \Vert_2 \Vert B \Vert_2}$$</p>
+                <p>
+                    where
+                </p>
+                <p>$$A^{'}_{i, j} = A_{i + \delta_i, j + \delta_j},\forall i \in [1, m], j \in [1, n]$$</p>
+                <p>
+                    Note that we assume the image matrix $A$ are infinitely zero-padded outside the borders.
+                </p>
+
+                 <header class="main">
+                    <div id="algorithm"></div>
+                    <h1>Algorithm</h1>
+                </header>
+
+                <p>
+                    The naive algorithm is to exhaustively search over all possible $\delta_i, \delta_j$.
+                    Since the channels likely won't be misaligned by a lot, the optimal solution
+                    $\delta_i^{*}, \delta_j^{*}$ would likely be small in the absolute value.
+                    Therefore, for low-resolution images, searching over a small range would also likely to yield the
+                    same result.
+                </p>
+
+                <p>
+                    However, if the image is large, the exhaustive search approach would be highly inefficient.
+                    To improve the efficiency, we use the pyramid search strategy to speed up the process.
+                </p>
+                <p>
+                    The implementation of the pyramid and search algorithm is recursive in this project.
+                    If the image is larger than some threshold, we apply Gaussian blur on the image, and then downsample
+                    the image to shrink the dimensions by half.
+                    We recursively call the pyramid and search function until the image is shrunk sufficiently.
+                    In each call, we search within a very small window (with a displacement in $[-2, 2]$).
+                    This allows us to first coarsely align the images and then fine-tune the displacement, and therefore
+                    reduce redundant computations.
+                    The final displacements are the weighted sum of the displacements on all levels of the pyramid.
+                </p>
+
+                <hr class="major"/>
+                <header class="main">
+                    <div id="gallery"></div>
+                    <h1>Gallery</h1>
+                </header>
+
+                <p>Go to the <a href="gallery.html">gallery</a>.</p>
+
+                <hr class="major"/>
+                <h1>Bells and Whistles</h1>
+
+
+                <div id="edge"></div>
+                <h2>Edge Extraction</h2>
+                <p>
+                    Since the variety of colors in an image can vary greatly, matching in the RGB space usually isn't
+                    ideal.
+                </p>
+                <p>
+                    Instead, we perform matching in the feature space.
+                    In this project, we selected the edges as the features.
+                    Edge extraction is done using the OpenCV implementation of Canny algorithm.
+                </p>
+                <img style="width: 100%" src="images/edges.png" alt="">
+
+                <hr class="major"/>
+
+                <div id="cropping"></div>
+                <h2>Automatic cropping</h2>
+                <p>
+                    The RGB images extracted from the original image by simply slicing it into three vertical subparts
+                    would have black or white edges.
+                    To remove them, we simply remove all rows that are all zeros or ones in any channel, which would
+                    imply they are along the borders.
+                </p>
+
+                <p>
+                    In addition, since the channels are linearly translated during the matching process, the unmatched
+                    portion of the images would have incomplete information.
+                    These parts along the borders are also automatically removed based on the displacements.
+                </p>
+
+                <p>
+                    Finally, since the borders tends to have the most visual artifacts, a constant ratio cropping is
+                    applied to keep only the center of the image to get rid of the residuals.
+                </p>
+                <img style="width: 100%" src="images/cropping.png" alt="">
+
+                <hr class="major"/>
+                <div id="hist_eq"></div>
+                <h2>White balancing and Histogram Equalization</h2>
+                <p>
+                    To make the images more photo realistic, white balancing and histogram equalization are performed
+                    after all operations above were completed.
+                </p>
+                <p>
+                    White balancing is done in an naive approach: assume the brightest pixel in each channel as the
+                    reference point and linearly scale each channel such that the brightest pixel is white.
+                    Histogram equalization is done by taking the cumulative histogram of each channel and use it to
+                    map the value of each pixels.
+                </p>
+                <img style="width: 100%" src="images/hist_eq.png" alt="">
+                <p>
+                    This extra procedure works well for some, but not all, images.
+                    In the gallery, the images that went through these extra procedures are labeled.
+                </p>
+
+
+            </section>
+
+            <section>
+                <header class="main">
+                    <div id="limitations"></div>
+                    <h1>Limitations</h1>
+                </header>
+
+                <p>
+                    Even though the algorithm successfully matched all given examples, the algorithm has limitations
+                    when it comes to the details.
+                    This is especially prominent in scenes depicting peoples, one example being the image "three generations".
+                    One possible explanation is that the three channels may not have been taken at exactly the same moment,
+                    and the small movements by the models caused a mismatch across channels.
+                    Since the models only take up a limited portion of the image, and the algorithm looks for the best
+                    match across the entire image, there would likely be more visual artifacts around the models.
+                </p>
+            </section>
+
+            <section>
+                <header class="main">
+                    <div id="reference"></div>
+                    <h1>Reference</h1>
+                </header>
+
+                <p>
+                    <ul>
+                        <li><a href="https://en.wikipedia.org/w/index.php?title=Canny_edge_detector&oldid=1235653606">Canny Edge Detector</a></li>
+                    </ul>
+                </p>
+
+                <p>
+                    HTML Templates:
+                </p>
+                <p>
+                    <ul>
+                        <li><a href="https://html5up.net/multiverse">Multiverse by HTML5UP</a></li>
+                        <li><a href="https://html5up.net/editorial">Editorial by HTML5UP</a></li>
+                    </ul>
+                </p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="inner">
+
+            <!-- Search -->
+            <!--								<section id="search" class="alt">-->
+            <!--									<form method="post" action="#">-->
+            <!--										<input type="text" name="query" id="query" placeholder="Search" />-->
+            <!--									</form>-->
+            <!--								</section>-->
+
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>Menu</h2>
+                </header>
+                <ul>
+                    <li><a href="#description">Project Description</a></li>
+                    <li><a href="#objective">Objective</a></li>
+                    <li><a href="#algorithm">Algorithm</a></li>
+                    <li><a href="gallery.html">Gallery</a></li>
+                    <li>
+                        <span class="opener">Bells and Whistles</span>
+                        <ul>
+                            <li><a href="#edge">Edge Extraction</a></li>
+                            <li><a href="#cropping">Automatic Cropping</a></li>
+                            <li><a href="#hist_eq">White Balancing & Histogram Equalization</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#limitations">Limitations</a></li>
+                </ul>
+            </nav>
+
+            <section>
+                <header class="major">
+                    <h2>Author</h2>
+                </header>
+                <p>Shengfan Cao</p>
+                <p>Ph.D. student in Mechanical Engineering</p>
+                <p>Lab Affiliation: Model Predictive Control Lab</p>
+                <ul class="contact">
+                    <li class="icon solid fa-envelope"><a href="#">shengfan_cao@berkeley.edu</a></li>
+                    <li class="icon solid fa-phone">(510) 946-0740</li>
+                    <!--										<li class="icon solid fa-home">1234 Somewhere Road #8254<br />-->
+                    <!--										Nashville, TN 00000-0000</li>-->
+                </ul>
+            </section>
+
+            <!-- Footer -->
+            <!--								<footer id="footer">-->
+            <!--									<p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>-->
+            <!--								</footer>-->
+
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
