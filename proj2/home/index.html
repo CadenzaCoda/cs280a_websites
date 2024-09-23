@@ -194,18 +194,22 @@
 						<p>
 							Let's take a closer look at the intermediate products of the algorithm.
 						</p>
-						<span class="image fit"><img src="images/low_pass_(DerekPicture).png" alt=""></span>
+						<span class="image fit"><img src="images/low_pass_FT_(DerekPicture).png" alt=""></span>
 						<p>
 							After the low pass filter, the majority of high frequency components, except of those
 							parallel to the principle axes, have been eliminated.
 						</p>
-						<span class="image fit"><img src="images/high_pass_(nutmeg).png" alt=""></span>
+						<span class="image fit"><img src="images/high_pass_FT_(nutmeg).png" alt=""></span>
 						<p>
 							Note that after applying the high pass filter, the values of some pixels might become negative.
 							The high pass filtered image above has been linearly rescaled to $(0, 1)$ to be displayed normally.
 							After the filter, the high frequency components of the image remains largely the same, while
 							the low frequency components are greatly muted.
 						</p>
+						<p>
+							The Fourier Transform of the hybrid image is as follows.
+						</p>
+						<span class="image fit"><img src="images/hybrid_FT_(DerekPicture_nutmeg).png" alt=""></span>
 
 						<h3>Failure Analysis</h3>
 						<p>
@@ -214,71 +218,168 @@
 						</p>
 						<p style="color:red; font-size:300%">TODO</p>
 
+						<hr class="major" />
+						<h2>Bells & Whistles: Enhancing the results with color</h2>
+						<p>
+							To further enhance the result, let's compare the what happens if one or both of the images
+							are set to grayscale.
+						</p>
+						<table style="table-layout: fixed">
+							<tr>
+								<th style="text-align:center">Both colored</th>
+								<th style="text-align:center">High colored</th>
+								<th style="text-align:center">Low colored</th>
+								<th style="text-align:center">Both grayscale</th>
+							</tr>
+							<tr>
+								<th>
+									<figure class="image fit">
+										<img src="images/DerekPicture_nutmeg_hybrid.png" alt="">
+									</figure>
+								</th>
+								<th>
+									<figure class="image fit">
+										<img src="images/DerekPicture_nutmeg_gray_low_hybrid.png" alt="">
+									</figure>
+								</th>
+								<th>
+									<figure class="image fit">
+										<img src="images/DerekPicture_nutmeg_gray_high_hybrid.png" alt="">
+									</figure>
+								</th>
+								<th>
+									<figure class="image fit">
+										<img src="images/DerekPicture_nutmeg_gray_low_gray_high_hybrid.png" alt="">
+									</figure>
+								</th>
+							</tr>
+						</table>
+						<p>
+							Through visual inspection, using the color from both images seems to lead to the best result.
+							One possible explanation is that frequencies across different channels don't have a significant
+							impact on each other, and more information is retained in the hybrid image, leading to better
+							result visually.
+						</p>
 					</section>
 
-						<!-- Section -->
-							<section>
-								<header class="major">
-									<h2>Sections</h2>
-								</header>
-								<div class="posts">
-									<article>
-										<a href="#" class="image"><img src="images/cameraman_edges.png" alt="" /></a>
-										<h3>Edge Extraction</h3>
-										<p>
-											Fun with Filters!
-											Edge extraction with 2D Gaussian filters and finite difference operators.
-										</p>
-										<ul class="actions">
-											<li><a href="#" class="button">More</a></li>
-										</ul>
-									</article>
-									<article>
-										<a href="#" class="image"><img src="images/taj_sharpened.png" alt="" /></a>
-										<h3>Image Sharpening</h3>
-										<p>
-											Image sharpening via high frequency enhancing.
-										</p>
-										<ul class="actions">
-											<li><a href="#" class="button">More</a></li>
-										</ul>
-									</article>
-									<article>
-										<a href="#" class="image"><img src="images/nutmeg_DerekPicture_hybrid.png" alt="" /></a>
-										<h3>Hybrid Images</h3>
-										<p>
+					<section id="stacks">
+						<header class="content">
+							<h1>Gaussian and Laplacian Stacks</h1>
+							<p>(Part 2.3: Gaussian and Laplacian Stacks)</p>
+						</header>
+						<h2>How It Works</h2>
+						<p>
+							As has been demonstrated in <a href="#sharpen">the image sharpening section</a>,
+							Gaussian filter works like a low-pass filter.
+							Therefore, by recursively applying an Gaussian filter that is doubled in size and sigma,
+							we can create a "stack" of images that contains less and less high frequency components.
+						</p>
+						<p>
+							Also, by subtracting the low frequency components from the original image, we get the high
+							frequency components.
+							By taking the difference between two levels in the Gaussian stack, we can get a new stack of
+							images that only contains frequencies in a specific band.
+							This allows us to analyze the components of the image, and also paved way for fun techniques
+							such as <a href="#blending">image blending</a>!
+						</p>
 
-										</p>
-										<ul class="actions">
-											<li><a href="#" class="button">More</a></li>
-										</ul>
-									</article>
-									<article>
-										<a href="#" class="image"><img src="images/pic04.jpg" alt="" /></a>
-										<h3>Sed etiam facilis</h3>
-										<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-										<ul class="actions">
-											<li><a href="#" class="button">More</a></li>
-										</ul>
-									</article>
-									<article>
-										<a href="#" class="image"><img src="images/pic05.jpg" alt="" /></a>
-										<h3>Feugiat lorem aenean</h3>
-										<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-										<ul class="actions">
-											<li><a href="#" class="button">More</a></li>
-										</ul>
-									</article>
-									<article>
-										<a href="#" class="image"><img src="images/pic06.jpg" alt="" /></a>
-										<h3>Amet varius aliquam</h3>
-										<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-										<ul class="actions">
-											<li><a href="#" class="button">More</a></li>
-										</ul>
-									</article>
-								</div>
-							</section>
+						<hr class="major" />
+						<h2>Results</h2>
+						<h3>Apple</h3>
+						<span class="image fit"><img src="images/apple_gaussian.png" alt="The Gaussian stack of the apple image."></span>
+						<span class="image fit"><img src="images/apple_laplacian.png" alt="The Laplacian stack of the apple image."></span>
+
+						<h3>Orange</h3>
+						<span class="image fit"><img src="images/orange_gaussian.png" alt="The Gaussian stack of the orange image."></span>
+						<span class="image fit"><img src="images/orange_laplacian.png" alt="The Laplacian stack of the orange image."></span>
+
+						<h3>"Oraple"</h3>
+						<span class="image fit"><img src="images/orple_gaussian.png" alt="The Gaussian stack of the 'oraple' image."></span>
+						<span class="image fit"><img src="images/orple_laplacian.png" alt="The Laplacian stack of the 'oraple' image."></span>
+
+						We can also attempt to recreate the figure in the 1983 <a href="http://persci.mit.edu/pub_pdfs/spline83.pdf">paper</a>
+						with the stacks we created.
+						<span class="image fit">
+							<img style="width: 100%; max-width: 500px; margin-left: auto; margin-right: auto" src="images/figure342_recreated.png" alt="">
+						</span>
+					</section>
+
+					<section id="blending">
+						<header class="content">
+							<h1>Multiresolution blending</h1>
+							<p>(Part 2.4: Multiresolution blending)</p>
+						</header>
+
+						<h2>How It Works</h2>
+						TODO
+
+						<hr class="major" />
+						<h2>Results</h2>
+						<span class="image fit">
+							<img src="images/apple_orange_blended.png" alt="">
+						</span>
+						TODO
+					</section>
+
+					<!-- Section -->
+					<section id="nav">
+						<header class="major">
+							<h2>Navigation</h2>
+						</header>
+						<div class="posts">
+							<article>
+								<a href="#edge" class="image"><img src="images/cameraman_edges.png" alt="" /></a>
+								<h3>Edge Extraction</h3>
+								<p>
+									Fun with Filters!
+									Edge extraction with 2D Gaussian filters and finite difference operators.
+								</p>
+								<ul class="actions">
+									<li><a href="#edge" class="button">More</a></li>
+								</ul>
+							</article>
+							<article>
+								<a href="#sharpen" class="image"><img src="images/taj_sharpened.png" alt="" /></a>
+								<h3>Image Sharpening</h3>
+								<p>
+									Image sharpening via high frequency enhancing.
+								</p>
+								<ul class="actions">
+									<li><a href="#sharpen" class="button">More</a></li>
+								</ul>
+							</article>
+							<article>
+								<a href="#hybrid" class="image"><img src="images/nutmeg_DerekPicture_hybrid.png" alt="" /></a>
+								<h3>Hybrid Images</h3>
+								<p>
+									Creating images that looks different when viewed up close and from afar!
+								</p>
+								<ul class="actions">
+									<li><a href="#hybrid" class="button">More</a></li>
+								</ul>
+							</article>
+							<article>
+								<a href="#stacks" class="image"><img src="images/figure342_recreated.png" alt="" /></a>
+								<h3>Gaussian and Laplacian Stack</h3>
+								<p>
+									Separate the high and low frequency components of an image with stacks.
+								</p>
+								<ul class="actions">
+									<li><a href="#stacks" class="button">More</a></li>
+								</ul>
+							</article>
+							<article>
+								<a href="#blending" class="image"><img src="images/apple_orange_blended_result.png" alt="" /></a>
+								<h3>Multiresolution Blending</h3>
+								<p>
+									Mix the Laplacian stacks of two images to smoothly blend two images together!
+								</p>
+								<ul class="actions">
+									<li><a href="#blending" class="button">More</a></li>
+								</ul>
+							</article>
+						</div>
+					</section>
 
 					</div>
 				</div>
