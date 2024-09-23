@@ -6,7 +6,7 @@
 -->
 <html lang="en">
 	<head>
-		<title>Editorial by HTML5 UP</title>
+		<title>Project 2 - Fun with Filters and Frequencies!</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -141,16 +141,79 @@
 <!--									</span>-->
 					</section>
 
-					<section>
-						<div id="sharpen">
+					<section id="sharpen">
+						<div class="content">
 							<header>
 								<h1>
 									Image Sharpening<br/>
 								</h1>
 								<p>(Part 2.1: Image "Sharpening")</p>
 							</header>
-<!--							TODO-->
+							<h2>How It Works</h2>
+							<p>
+								An image can be sharpened by enhancing the details, which are usually higher in frequency.
+								One algorithm to achieve this is to apply a high pass filter on the image, and then add
+								the extracted high-frequency information back to the image.
+								$$I_{\textrm{sharpened}} = (1 + \alpha) I - \alpha (G * I)$$
+								where $G$ is an Gaussian filter.
+							</p>
+							<hr class="major" />
+							<h2>Results</h2>
+							<span class="image fit"><img src="images/Image_sharpening_(taj).png" alt=""></span>
+							<p style="color:red; font-size:300%; text-align:center">TODO: More results here!</p>
+
+							<p>
+								With appropriate $\alpha$, the details of the images, such as the fine textures of the
+								building in the Taj Mahal photo, becomes more visible.
+							</p>
+							<p>
+								However, if the sharpening is done too aggressively, the image becomes excessively noisy,
+								and the edges become overly dense, making the photo less natural.
+								One should exercise moderation when applying this technique to enhance their photos.
+							</p>
 						</div>
+					</section>
+
+					<section id="hybrid">
+						<header class="content">
+							<h1>Hybrid Images</h1>
+							<p>(Part 2.2: Hybrid Images)</p>
+						</header>
+						<h2>How It Works</h2>
+						<p>
+							By mixing the low frequency information of one image with the high frequency of another image,
+							we can create "hybrid images" that appears different when viewed up close and from afar.
+							$$H=I_1 * G_1 + I_2 * (1 - G_2)$$
+						</p>
+
+						<hr class="major" />
+						<h2>Results & Analysis</h2>
+						<p style="color:red; font-size:300%">TODO</p>
+
+						<h3>Case Study via Fourier Transform</h3>
+						<p>
+							Let's take a closer look at the intermediate products of the algorithm.
+						</p>
+						<span class="image fit"><img src="images/low_pass_(DerekPicture).png" alt=""></span>
+						<p>
+							After the low pass filter, the majority of high frequency components, except of those
+							parallel to the principle axes, have been eliminated.
+						</p>
+						<span class="image fit"><img src="images/high_pass_(nutmeg).png" alt=""></span>
+						<p>
+							Note that after applying the high pass filter, the values of some pixels might become negative.
+							The high pass filtered image above has been linearly rescaled to $(0, 1)$ to be displayed normally.
+							After the filter, the high frequency components of the image remains largely the same, while
+							the low frequency components are greatly muted.
+						</p>
+
+						<h3>Failure Analysis</h3>
+						<p>
+							To achieve the best outcome, the two images must be similar in structure and well-aligned.
+							Otherwise, the images must be sufficiently blurred to make the two images clearly distinguishable.
+						</p>
+						<p style="color:red; font-size:300%">TODO</p>
+
 					</section>
 
 						<!-- Section -->
