@@ -5,485 +5,618 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html lang="en">
-	<head>
-		<title>Project 2 - Fun with Filters and Frequencies!</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
+<head>
+    <title>Project 2 - Fun with Filters and Frequencies!</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="assets/css/main.css"/>
 
-		<script type="text/x-mathjax-config">
-			MathJax.Hub.Config({
-			  tex2jax: {
-				skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
-				inlineMath: [['$','$']]
-			  }
-			});
-		</script>
-		<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-				type="text/javascript"></script>
-	</head>
-	<body class="is-preload">
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+          }
+        });
+    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            type="text/javascript"></script>
+</head>
+<body class="is-preload">
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+<!-- Wrapper -->
+<div id="wrapper">
 
-				<!-- Main -->
-				<div id="main">
-					<div class="inner">
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
 
-					<!-- Header -->
-					<header id="header">
-						<a href="index.html" class="logo"><strong>Project 2</strong> Fun with Filters and Frequencies!</a>
-<!--									<ul class="icons">-->
-<!--										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>-->
-<!--										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>-->
-<!--										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>-->
-<!--										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>-->
-<!--										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>-->
-<!--									</ul>-->
-					</header>
+            <!-- Header -->
+            <header id="header">
+                <a href="index.html" class="logo"><strong>Project 2</strong> Fun with Filters and Frequencies!</a>
+                <!--									<ul class="icons">-->
+                <!--										<li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>-->
+                <!--										<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>-->
+                <!--										<li><a href="#" class="icon brands fa-snapchat-ghost"><span class="label">Snapchat</span></a></li>-->
+                <!--										<li><a href="#" class="icon brands fa-instagram"><span class="label">Instagram</span></a></li>-->
+                <!--										<li><a href="#" class="icon brands fa-medium-m"><span class="label">Medium</span></a></li>-->
+                <!--									</ul>-->
+            </header>
 
-					<!-- Banner -->
-					<section id="edge">
-						<div class="content">
-							<header>
-								<h1>Edge Extraction<br />
-								</h1>
-								<p>(Part 1: Fun with Filters)</p>
-							</header>
-							<header>
-								<h2>How It Works</h2>
-							</header>
-							<p>
-								An intuitive way to understand the "edges" in images is sudden changes in
-								the values between adjacent pixels.
-								Mathematically, such changes are reflected in the gradient of the pixel values.
-								Let $I \in \mathcal{R}^{m \times n}$ denote a grayscale image.
-								The gradient is defined as
-							</p>
-							<p>
-								$$\nabla I = \begin{bmatrix}\frac{\partial I}{\partial x} & \frac{\partial I}{\partial y}\end{bmatrix}$$
-							</p>
-							<p>
-								Since the pixel coordinates are discrete, we use differencing instead.
-							</p>
-							<p>
-								$$\begin{align}
-								\frac{\partial I(x, y)}{\partial x} &\approx I(x + 1, y) - I(x, y) \\
-								\frac{\partial I(x, y)}{\partial y} &\approx I(x, y + 1) - I(x, y)
-								\end{align}$$
-							</p>
-							<p>
-								which is equivalent to the following convolutions
-							</p>
-							<p>
-								$$\begin{align}
-								\frac{\partial I}{\partial x} &\approx I * D_x\\
-								\frac{\partial I}{\partial y} &\approx I * D_y
-								\end{align}$$
-							</p>
-							<p>
-								where $D_x = \begin{bmatrix}1 & -1\end{bmatrix}$,
-								$D_y = \begin{bmatrix}1 & -1\end{bmatrix}^T$.
-							</p>
-							<p>
-								Finally, by taking the magnitude of the gradient at each pixel
-								$$\Vert \nabla I(x, y) \Vert_2 = \sqrt{\left(\frac{\partial I(x, y)}{\partial x}\right)^2 + \left(\frac{\partial I(x, y)}{\partial y}\right)^2}
-								$$
-								and applying an appropriate threshold to the values, we would get an image with binary edges.
-							</p>
+            <!-- Banner -->
+            <section id="edge">
+                <div class="content">
+                    <header>
+                        <h1>Edge Extraction<br/>
+                        </h1>
+                        <p>(Part 1: Fun with Filters)</p>
+                    </header>
+                    <header>
+                        <h2>How It Works</h2>
+                    </header>
+                    <p>
+                        An intuitive way to understand the "edges" in images is sudden changes in
+                        the values between adjacent pixels.
+                        Mathematically, such changes are reflected in the gradient of the pixel values.
+                        Let $I \in \mathcal{R}^{m \times n}$ denote a grayscale image.
+                        The gradient is defined as
+                    </p>
+                    <p>
+                        $$\nabla I = \begin{bmatrix}\frac{\partial I}{\partial x} & \frac{\partial I}{\partial
+                        y}\end{bmatrix}$$
+                    </p>
+                    <p>
+                        Since the pixel coordinates are discrete, we use differencing instead.
+                    </p>
+                    <p>
+                        $$\begin{align}
+                        \frac{\partial I(x, y)}{\partial x} &\approx I(x + 1, y) - I(x, y) \\
+                        \frac{\partial I(x, y)}{\partial y} &\approx I(x, y + 1) - I(x, y)
+                        \end{align}$$
+                    </p>
+                    <p>
+                        which is equivalent to the following convolutions
+                    </p>
+                    <p>
+                        $$\begin{align}
+                        \frac{\partial I}{\partial x} &\approx I * D_x\\
+                        \frac{\partial I}{\partial y} &\approx I * D_y
+                        \end{align}$$
+                    </p>
+                    <p>
+                        where $D_x = \begin{bmatrix}1 & -1\end{bmatrix}$,
+                        $D_y = \begin{bmatrix}1 & -1\end{bmatrix}^T$.
+                    </p>
+                    <p>
+                        Finally, by taking the magnitude of the gradient at each pixel
+                        $$\Vert \nabla I(x, y) \Vert_2 = \sqrt{\left(\frac{\partial I(x, y)}{\partial x}\right)^2 +
+                        \left(\frac{\partial I(x, y)}{\partial y}\right)^2}
+                        $$
+                        and applying an appropriate threshold to the values, we would get an image with binary edges.
+                    </p>
 
-							<p>
-								Let's test out our simple edge extractor on the grayscale image "cameraman".
-							</p>
-							<span class="image fit"><img src="images/Edges_without_filtering_(Threshold=0.2941)_(cameraman).png" alt="" /></span>
-							<p>
-								Note the threshold for the gradient magnitude is set to 0.2941 on the floating-point image.
-							</p>
+                    <p>
+                        Let's test out our simple edge extractor on the grayscale image "cameraman".
+                    </p>
+                    <span class="image fit"><img src="images/Edges_without_filtering_(Threshold=0.2941)_(cameraman).png"
+                                                 alt=""/></span>
+                    <p>
+                        Note the threshold for the gradient magnitude is set to 0.2941 on the floating-point image.
+                    </p>
 
-							<hr class="major" />
-							<header>
-								<h2>Enhancing Edges by Low-pass Filtering</h2>
-							</header>
-							<p>
-								One problem with the approach is the impact of noise on the image, which the finite
-								difference operator is very sensitive with.
-								Since noise is usually in high frequency, we can mitigate the problem by applying a
-								Gaussian filter before taking the gradient.
-							</p>
-							<span class="image fit"><img src="images/Edges_from_Gaussian_Blurred_Image_(Threshold=0.0392)_(cameraman).png" alt="" /></span>
-							<p>
-								Compared to the naive implementation above, the edges are much more prominent visually, even though the threshold is set to be much lower (0.0392 as compared to 0.2941).
-								Also, there are less noise in the background.
-							</p>
+                    <hr class="major"/>
+                    <header>
+                        <h2>Enhancing Edges by Low-pass Filtering</h2>
+                    </header>
+                    <p>
+                        One problem with the approach is the impact of noise on the image, which the finite
+                        difference operator is very sensitive with.
+                        Since noise is usually in high frequency, we can mitigate the problem by applying a
+                        Gaussian filter before taking the gradient.
+                    </p>
+                    <span class="image fit"><img
+                            src="images/Edges_from_Gaussian_Blurred_Image_(Threshold=0.0392)_(cameraman).png"
+                            alt=""/></span>
+                    <p>
+                        Compared to the naive implementation above, the edges are much more prominent visually, even
+                        though the threshold is set to be much lower (0.0392 as compared to 0.2941).
+                        Also, there are less noise in the background.
+                    </p>
 
-							<hr class="major" />
-							<header>
-								<h2>An Equivalent Approach: Derivative of Gaussian (DoG) Filter</h2>
-							</header>
-							<p>
-								We can simplify the procedure above to doing just a single convolution with the image.
-								Here we utilize the derivative theorem of convolution
-								$$\frac{\partial}{\partial x} (h * f) = (\frac{\partial}{\partial x} h) * f$$
-								and create the derivative of the Gaussian filter first, and then use the resulting filter
-								to perform the convolution.
-							</p>
-							<span class="image fit"><img src="images/Edges_from_convolution_with_DoG_Filter_(Threshold=0.0392)_(cameraman).png" alt="" /></span>
+                    <hr class="major"/>
+                    <header>
+                        <h2>An Equivalent Approach: Derivative of Gaussian (DoG) Filter</h2>
+                    </header>
+                    <p>
+                        We can simplify the procedure above to doing just a single convolution with the image.
+                        Here we utilize the derivative theorem of convolution
+                        $$\frac{\partial}{\partial x} (h * f) = (\frac{\partial}{\partial x} h) * f$$
+                        and create the derivative of the Gaussian filter first, and then use the resulting filter
+                        to perform the convolution.
+                    </p>
+                    <span class="image fit"><img
+                            src="images/Edges_from_convolution_with_DoG_Filter_(Threshold=0.0392)_(cameraman).png"
+                            alt=""/></span>
 
-							From this example, we can validate that the two approaches leads to the same result.
+                    From this example, we can validate that the two approaches leads to the same result.
 
-<!--										<ul class="actions">-->
-<!--											<li><a href="#" class="button big">Learn More</a></li>-->
-<!--										</ul>-->
-						</div>
-<!--									<span class="image object">-->
-<!--										<img src="images/pic10.jpg" alt="" />-->
-<!--									</span>-->
-					</section>
+                    <!--										<ul class="actions">-->
+                    <!--											<li><a href="#" class="button big">Learn More</a></li>-->
+                    <!--										</ul>-->
+                </div>
+                <!--									<span class="image object">-->
+                <!--										<img src="images/pic10.jpg" alt="" />-->
+                <!--									</span>-->
+            </section>
 
-					<section id="sharpen">
-						<div class="content">
-							<header>
-								<h1>
-									Image Sharpening<br/>
-								</h1>
-								<p>(Part 2.1: Image "Sharpening")</p>
-							</header>
-							<h2>How It Works</h2>
-							<p>
-								An image can be sharpened by enhancing the details, which are usually higher in frequency.
-								One algorithm to achieve this is to apply a high pass filter on the image, and then add
-								the extracted high-frequency information back to the image.
-								$$I_{\textrm{sharpened}} = (1 + \alpha) I - \alpha (G * I)$$
-								where $G$ is an Gaussian filter.
-							</p>
-							<hr class="major" />
-							<h2>Results</h2>
-							<span class="image fit"><img src="images/Image_sharpening_(taj).png" alt=""></span>
-							<p style="color:red; font-size:300%; text-align:center">TODO: More results here!</p>
+            <section id="sharpen">
+                <div class="content">
+                    <header>
+                        <h1>
+                            Image Sharpening<br/>
+                        </h1>
+                        <p>(Part 2.1: Image "Sharpening")</p>
+                    </header>
+                    <h2>How It Works</h2>
+                    <p>
+                        An image can be sharpened by enhancing the details, which are usually higher in frequency.
+                        One algorithm to achieve this is to apply a high pass filter on the image, and then add
+                        the extracted high-frequency information back to the image.
+                        $$I_{\textrm{sharpened}} = (1 + \alpha) I - \alpha (G * I)$$
+                        where $G$ is an Gaussian filter.
+                    </p>
+                    <hr class="major"/>
+                    <h2>Results</h2>
+                    <p>
+                        With appropriate $\alpha$, the details of the images, such as the fine textures of the
+                        building in the Taj Mahal photo, becomes more visible.
+                    </p>
+                    <p>
+                        However, if the sharpening is done too aggressively, the image becomes excessively noisy,
+                        and the edges become overly dense, making the photo less natural.
+                        Also, in the Terrace Lake example, applying aggressive sharpening also causes the color to shift
+                        towards higher frequency components.
+                        One should exercise moderation when applying this technique to enhance their photos.
+                    </p>
 
-							<p>
-								With appropriate $\alpha$, the details of the images, such as the fine textures of the
-								building in the Taj Mahal photo, becomes more visible.
-							</p>
-							<p>
-								However, if the sharpening is done too aggressively, the image becomes excessively noisy,
-								and the edges become overly dense, making the photo less natural.
-								One should exercise moderation when applying this technique to enhance their photos.
-							</p>
-						</div>
-					</section>
+                    <figure class="image fit">
+                        <img src="images/Image_sharpening_(taj).png" alt="">
+                        <figcaption style="text-align:center">Taj Mahal</figcaption>
+                    </figure>
 
-					<section id="hybrid">
-						<header class="content">
-							<h1>Hybrid Images</h1>
-							<p>(Part 2.2: Hybrid Images)</p>
-						</header>
-						<h2>How It Works</h2>
-						<p>
-							By mixing the low frequency information of one image with the high frequency of another image,
-							we can create "hybrid images" that appears different when viewed up close and from afar.
-							$$H=I_1 * G_1 + I_2 * (1 - G_2)$$
-						</p>
+                    <figure class="image fit">
+                        <img src="images/Image_sharpening_(terrace_lake).png" alt="">
+                        <figcaption style="text-align:center">Terrace Lake at Lassen Volcanic NP. Photo shot on an iPhone 13 Pro.</figcaption>
+                    </figure>
+<!--                    <span class="image fit"><img src="images/Image_sharpening_(taj).png" alt=""></span>-->
+<!--                    <span class="image fit"><img src="images/Image_sharpening_(terrace_lake).png" alt=""></span>-->
 
-						<hr class="major" />
-						<h2>Results & Analysis</h2>
-						<p style="color:red; font-size:300%">TODO</p>
+                </div>
+            </section>
 
-						<h3>Case Study via Fourier Transform</h3>
-						<p>
-							Let's take a closer look at the intermediate products of the algorithm.
-						</p>
-						<span class="image fit"><img src="images/low_pass_FT_(DerekPicture).png" alt=""></span>
-						<p>
-							After the low pass filter, the majority of high frequency components, except of those
-							parallel to the principle axes, have been eliminated.
-						</p>
-						<span class="image fit"><img src="images/high_pass_FT_(nutmeg).png" alt=""></span>
-						<p>
-							Note that after applying the high pass filter, the values of some pixels might become negative.
-							The high pass filtered image above has been linearly rescaled to $(0, 1)$ to be displayed normally.
-							After the filter, the high frequency components of the image remains largely the same, while
-							the low frequency components are greatly muted.
-						</p>
-						<p>
-							The Fourier Transform of the hybrid image is as follows.
-						</p>
-						<span class="image fit"><img src="images/hybrid_FT_(DerekPicture_nutmeg).png" alt=""></span>
+            <section id="hybrid">
+                <header class="content">
+                    <h1>Hybrid Images</h1>
+                    <p>(Part 2.2: Hybrid Images)</p>
+                </header>
+                <h2>How It Works</h2>
+                <p>
+                    By mixing the low frequency information of one image with the high frequency of another image,
+                    we can create "hybrid images" that appears different when viewed up close and from afar.
+                    $$H=I_1 * G_1 + I_2 * (1 - G_2)$$
+                </p>
 
-						<h3>Failure Analysis</h3>
-						<p>
-							To achieve the best outcome, the two images must be similar in structure and well-aligned.
-							Otherwise, the images must be sufficiently blurred to make the two images clearly distinguishable.
-						</p>
-						<p style="color:red; font-size:300%">TODO</p>
+                <hr class="major"/>
+                <h2>Results & Analysis</h2>
+                <table style="table-layout: fixed">
+                    <tr>
+                        <th style="text-align: center">Derek</th>
+                        <th style="text-align: center">Nutmeg</th>
+                        <th style="text-align: center">Derek-Nutmeg</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/DerekPicture.jpg" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/nutmeg.jpg" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/Derek_nutmeg_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">Pizza</th>
+                        <th style="text-align: center">Clock</th>
+                        <th style="text-align: center">Pizza Clock</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/pizza.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/clock.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/pizza_clock_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">Penguin</th>
+                        <th style="text-align: center">Bold Eagle</th>
+                        <th style="text-align: center">Penguin-Eagle</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/penguin.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/bold_eagle.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/penguin_bold_eagle_gray_low_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
+                </table>
 
-						<hr class="major" />
-						<h2>Bells & Whistles: Enhancing the results with color</h2>
-						<p>
-							To further enhance the result, let's compare the what happens if one or both of the images
-							are set to grayscale.
-						</p>
-						<table style="table-layout: fixed">
-							<tr>
-								<th style="text-align:center">Both colored</th>
-								<th style="text-align:center">High colored</th>
-								<th style="text-align:center">Low colored</th>
-								<th style="text-align:center">Both grayscale</th>
-							</tr>
-							<tr>
-								<th>
-									<figure class="image fit">
-										<img src="images/DerekPicture_nutmeg_hybrid.png" alt="">
-									</figure>
-								</th>
-								<th>
-									<figure class="image fit">
-										<img src="images/DerekPicture_nutmeg_gray_low_hybrid.png" alt="">
-									</figure>
-								</th>
-								<th>
-									<figure class="image fit">
-										<img src="images/DerekPicture_nutmeg_gray_high_hybrid.png" alt="">
-									</figure>
-								</th>
-								<th>
-									<figure class="image fit">
-										<img src="images/DerekPicture_nutmeg_gray_low_gray_high_hybrid.png" alt="">
-									</figure>
-								</th>
-							</tr>
-						</table>
-						<p>
-							Through visual inspection, using the color from both images seems to lead to the best result.
-							One possible explanation is that frequencies across different channels don't have a significant
-							impact on each other, and more information is retained in the hybrid image, leading to better
-							result visually.
-						</p>
-					</section>
+                <h3>Case Study via Fourier Transform</h3>
+                <p>
+                    Let's take a closer look at the intermediate products of the algorithm.
+                </p>
+                <span class="image fit"><img src="images/low_pass_FT_(pizza).png" alt=""></span>
+                <p>
+                    After the low pass filter, the majority of high frequency components, except of those
+                    parallel to the principle axes, have been eliminated.
+                </p>
+                <span class="image fit"><img src="images/high_pass_FT_(clock).png" alt=""></span>
+                <p>
+                    Note that after applying the high pass filter, the values of some pixels might become negative.
+                    The high pass filtered image above has been linearly rescaled to $(0, 1)$ to be displayed normally.
+                    After the filter, the high frequency components of the image remains largely the same, while
+                    the low frequency components are greatly muted.
+                </p>
+                <p>
+                    The Fourier Transform of the hybrid image is as follows.
+                </p>
+                <span class="image fit"><img src="images/hybrid_FT_(pizza_clock).png" alt=""></span>
 
-					<section id="stacks">
-						<header class="content">
-							<h1>Gaussian and Laplacian Stacks</h1>
-							<p>(Part 2.3: Gaussian and Laplacian Stacks)</p>
-						</header>
-						<h2>How It Works</h2>
-						<p>
-							As has been demonstrated in <a href="#sharpen">the image sharpening section</a>,
-							Gaussian filter works like a low-pass filter.
-							Therefore, by recursively applying an Gaussian filter that is doubled in size and sigma,
-							we can create a "stack" of images that contains less and less high frequency components.
-						</p>
-						<p>
-							Also, by subtracting the low frequency components from the original image, we get the high
-							frequency components.
-							By taking the difference between two levels in the Gaussian stack, we can get a new stack of
-							images that only contains frequencies in a specific band.
-							This allows us to analyze the components of the image, and also paved way for fun techniques
-							such as <a href="#blending">image blending</a>!
-						</p>
+                <h3>Failure Analysis</h3>
+                <p>
+                    To achieve desirable result, the image chosen to be high-pass filtered must have sufficient
+                    high frequency components, and the low-pass filtered one must have enough low frequency components.
+                    Otherwise, there might not be sufficient information left in the hybrid image.
+                </p>
+                <p>
+                    If we swap the role of the pizza and the clock in the example above, we would get the following
+                    result.
+                </p>
+                <figure class="image fit">
+                    <img style="width: 100%; max-width: 400px; margin-left: auto; margin-right: auto" src="images/clock_pizza_hybrid(failed).png" alt="">
+                    <figcaption style="text-align: center">Failed hybrid image.<br>
+                        High frequency=pizza, low frequency=clock.</figcaption>
+                </figure>
 
-						<hr class="major" />
-						<h2>Results</h2>
-						<h3>Apple</h3>
-						<span class="image fit"><img src="images/apple_gaussian.png" alt="The Gaussian stack of the apple image."></span>
-						<span class="image fit"><img src="images/apple_laplacian.png" alt="The Laplacian stack of the apple image."></span>
 
-						<h3>Orange</h3>
-						<span class="image fit"><img src="images/orange_gaussian.png" alt="The Gaussian stack of the orange image."></span>
-						<span class="image fit"><img src="images/orange_laplacian.png" alt="The Laplacian stack of the orange image."></span>
+                <hr class="major"/>
+                <h2>Enhancing the results with color</h2>
+                <p>
+                    To further enhance the result, let's compare the what happens if one or both of the images
+                    are set to grayscale.
+                </p>
+                <table style="table-layout: fixed">
+                    <tr>
+                        <th style="text-align:center">Both colored</th>
+                        <th style="text-align:center">High colored</th>
+                        <th style="text-align:center">Low colored</th>
+                        <th style="text-align:center">Both grayscale</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/DerekPicture_nutmeg_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/DerekPicture_nutmeg_gray_low_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/DerekPicture_nutmeg_gray_high_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/DerekPicture_nutmeg_gray_low_gray_high_hybrid.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
 
-						<h3>"Oraple"</h3>
-						<span class="image fit"><img src="images/orple_gaussian.png" alt="The Gaussian stack of the 'oraple' image."></span>
-						<span class="image fit"><img src="images/orple_laplacian.png" alt="The Laplacian stack of the 'oraple' image."></span>
+                </table>
+                <p>
+                    Through visual inspection, if the shape of the two images are similar, using the color from both
+                    images seems to lead to the best result.
 
-						We can also attempt to recreate the figure in the 1983 <a href="http://persci.mit.edu/pub_pdfs/spline83.pdf">paper</a>
-						with the stacks we created.
-						<span class="image fit">
-							<img style="width: 100%; max-width: 500px; margin-left: auto; margin-right: auto" src="images/figure342_recreated.png" alt="">
+                    One possible explanation is that frequencies across different channels don't have a significant
+                    impact on each other, and more information is retained in the hybrid image, leading to better
+                    result visually.
+                </p>
+                <p>
+                    However, if the shapes are significantly different (e.g. in the penguin-eagle example), using the
+                    color only from the high frequency image seems to lead to better result.
+                    This is possibly because removing the color from the low frequency image enhances the contrast of
+                    the high frequency components, making it more clearly discernible.
+                </p>
+            </section>
+
+            <section id="stacks">
+                <header class="content">
+                    <h1>Gaussian and Laplacian Stacks</h1>
+                    <p>(Part 2.3: Gaussian and Laplacian Stacks)</p>
+                </header>
+                <h2>How It Works</h2>
+                <p>
+                    As has been demonstrated in <a href="#sharpen">the image sharpening section</a>,
+                    Gaussian filter works like a low-pass filter.
+                    Therefore, by recursively applying an Gaussian filter that is doubled in size and sigma on
+                    each level, we can create a "stack" of images that contains less and less high frequency
+                    components.
+                </p>
+                <p>
+                    Also, by subtracting the low frequency components from the original image, we get the high
+                    frequency components.
+                    By taking the difference between two levels in the Gaussian stack, we can get a new stack of
+                    images that only contains frequencies in a specific band.
+                    This allows us to analyze the components of the image, and also paved way for fun techniques
+                    such as <a href="#blending">image blending</a>!
+                </p>
+
+                <hr class="major"/>
+                <h2>Results</h2>
+                <h3>Apple</h3>
+                <span class="image fit"><img src="images/apple_gaussian.png"
+                                             alt="The Gaussian stack of the apple image."></span>
+                <span class="image fit"><img src="images/apple_laplacian.png"
+                                             alt="The Laplacian stack of the apple image."></span>
+
+                <h3>Orange</h3>
+                <span class="image fit"><img src="images/orange_gaussian.png"
+                                             alt="The Gaussian stack of the orange image."></span>
+                <span class="image fit"><img src="images/orange_laplacian.png"
+                                             alt="The Laplacian stack of the orange image."></span>
+
+                <h3>"Oraple"</h3>
+                <span class="image fit"><img src="images/orple_gaussian.png"
+                                             alt="The Gaussian stack of the 'oraple' image."></span>
+                <span class="image fit"><img src="images/orple_laplacian.png"
+                                             alt="The Laplacian stack of the 'oraple' image."></span>
+
+                We can also attempt to recreate the figure in the 1983 <a
+                    href="http://persci.mit.edu/pub_pdfs/spline83.pdf">paper</a>
+                with the stacks we created.
+                <span class="image fit">
+							<img style="width: 100%; max-width: 500px; margin-left: auto; margin-right: auto"
+                                 src="images/figure342_recreated.png" alt="">
 						</span>
-					</section>
+            </section>
 
-					<section id="blending">
-						<header class="content">
-							<h1>Multiresolution blending</h1>
-							<p>(Part 2.4: Multiresolution blending)</p>
-						</header>
+            <section id="blending">
+                <header class="content">
+                    <h1>Multiresolution blending</h1>
+                    <p>(Part 2.4: Multiresolution blending)</p>
+                </header>
 
-						<h2>How It Works</h2>
-						TODO
+                <h2>How It Works</h2>
+                <p>
+                    To naturally blend two images together, the transition window must be greater than the size
+                    of the most prominent feature and smaller than twice the size of the smallest prominent feature.
+                    This condition is naturally satisfied on each level of the Laplacian stack, which only contains
+                    frequencies within a specific band.
+                </p>
+                <p>
+                    Here we follow the algorithm proposed in Burt and Adelson's <a
+                        href="http://persci.mit.edu/pub_pdfs/spline83.pdf">paper</a>:
+                </p>
+				<ol>
+					<li>Build Laplacian pyramids for the two images respectively.</li>
+					<li>Build Gaussian pyramid for the region image. </li>
+					<li>Form a combined pyramid from the Laplacian pyramids using nodes of the region image's Gaussian pyramid as weights.</li>
+					<li>Obtain the splined image by expanding and summing the levels of the combined pyramid.</li>
+				</ol>
+                <hr class="major"/>
+                <h2>Results</h2>
+                <figure class="image fit">
+                    <img src="images/apple_orange_blended.png" alt="">
+                    <figcaption style="text-align: center">Apple and Orange. Image from <a href="http://persci.mit.edu/pub_pdfs/spline83.pdf">paper</a>.</figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/eiffel_day_eiffel_night_blended.png" alt="">
+                    <figcaption style="text-align: center">Eiffel tower day and night. <a href="https://x.com/ThaiAirways/status/402784170851590145">Image from X<a>.</a></figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/circuit_island_house_blended.png" alt="">
+                    <figcaption style="text-align: center">Circuit board and isolated island house.<br>
+                        Note the boundary is of the same shape as the chip in the center.<br>
+                        Image source for
+                        <a href="https://shorturl.at/oVLtR">the circuit board</a> and
+                        <a href="https://shorturl.at/XbuWJ">the island house</a>.</figcaption>
+                </figure>
+            </section>
 
-						<hr class="major" />
-						<h2>Results</h2>
-						<span class="image fit">
-							<img src="images/apple_orange_blended.png" alt="">
-						</span>
-						TODO
-					</section>
+            <!-- Section -->
+            <section id="nav">
+                <header class="major">
+                    <h2>Navigation</h2>
+                </header>
+                <div class="posts">
+                    <article>
+                        <a href="#edge" class="image"><img src="images/cameraman_edges.png" alt=""/></a>
+                        <h3>Edge Extraction</h3>
+                        <p>
+                            Fun with Filters!
+                            Edge extraction with 2D Gaussian filters and finite difference operators.
+                        </p>
+                        <ul class="actions">
+                            <li><a href="#edge" class="button">More</a></li>
+                        </ul>
+                    </article>
+                    <article>
+                        <a href="#sharpen" class="image"><img src="images/taj_sharpened.png" alt=""/></a>
+                        <h3>Image Sharpening</h3>
+                        <p>
+                            Image sharpening via high frequency enhancing.
+                        </p>
+                        <ul class="actions">
+                            <li><a href="#sharpen" class="button">More</a></li>
+                        </ul>
+                    </article>
+                    <article>
+                        <a href="#hybrid" class="image"><img src="images/nutmeg_DerekPicture_hybrid.png" alt=""/></a>
+                        <h3>Hybrid Images</h3>
+                        <p>
+                            Creating images that looks different when viewed up close and from afar!
+                        </p>
+                        <ul class="actions">
+                            <li><a href="#hybrid" class="button">More</a></li>
+                        </ul>
+                    </article>
+                    <article>
+                        <a href="#stacks" class="image"><img src="images/figure342_recreated.png" alt=""/></a>
+                        <h3>Gaussian and Laplacian Stack</h3>
+                        <p>
+                            Separate the high and low frequency components of an image with stacks.
+                        </p>
+                        <ul class="actions">
+                            <li><a href="#stacks" class="button">More</a></li>
+                        </ul>
+                    </article>
+                    <article>
+                        <a href="#blending" class="image"><img src="images/apple_orange_blended_result.png" alt=""/></a>
+                        <h3>Multiresolution Blending</h3>
+                        <p>
+                            Mix the Laplacian stacks of two images to smoothly blend two images together!
+                        </p>
+                        <ul class="actions">
+                            <li><a href="#blending" class="button">More</a></li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
 
-					<!-- Section -->
-					<section id="nav">
-						<header class="major">
-							<h2>Navigation</h2>
-						</header>
-						<div class="posts">
-							<article>
-								<a href="#edge" class="image"><img src="images/cameraman_edges.png" alt="" /></a>
-								<h3>Edge Extraction</h3>
-								<p>
-									Fun with Filters!
-									Edge extraction with 2D Gaussian filters and finite difference operators.
-								</p>
-								<ul class="actions">
-									<li><a href="#edge" class="button">More</a></li>
-								</ul>
-							</article>
-							<article>
-								<a href="#sharpen" class="image"><img src="images/taj_sharpened.png" alt="" /></a>
-								<h3>Image Sharpening</h3>
-								<p>
-									Image sharpening via high frequency enhancing.
-								</p>
-								<ul class="actions">
-									<li><a href="#sharpen" class="button">More</a></li>
-								</ul>
-							</article>
-							<article>
-								<a href="#hybrid" class="image"><img src="images/nutmeg_DerekPicture_hybrid.png" alt="" /></a>
-								<h3>Hybrid Images</h3>
-								<p>
-									Creating images that looks different when viewed up close and from afar!
-								</p>
-								<ul class="actions">
-									<li><a href="#hybrid" class="button">More</a></li>
-								</ul>
-							</article>
-							<article>
-								<a href="#stacks" class="image"><img src="images/figure342_recreated.png" alt="" /></a>
-								<h3>Gaussian and Laplacian Stack</h3>
-								<p>
-									Separate the high and low frequency components of an image with stacks.
-								</p>
-								<ul class="actions">
-									<li><a href="#stacks" class="button">More</a></li>
-								</ul>
-							</article>
-							<article>
-								<a href="#blending" class="image"><img src="images/apple_orange_blended_result.png" alt="" /></a>
-								<h3>Multiresolution Blending</h3>
-								<p>
-									Mix the Laplacian stacks of two images to smoothly blend two images together!
-								</p>
-								<ul class="actions">
-									<li><a href="#blending" class="button">More</a></li>
-								</ul>
-							</article>
-						</div>
-					</section>
+        </div>
+    </div>
 
-					</div>
-				</div>
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="inner">
 
-				<!-- Sidebar -->
-					<div id="sidebar">
-						<div class="inner">
+            <!-- Search -->
+<!--            <section id="search" class="alt">-->
+<!--                <form method="post" action="#">-->
+<!--                    <input type="text" name="query" id="query" placeholder="Search"/>-->
+<!--                </form>-->
+<!--            </section>-->
 
-							<!-- Search -->
-								<section id="search" class="alt">
-									<form method="post" action="#">
-										<input type="text" name="query" id="query" placeholder="Search" />
-									</form>
-								</section>
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>Menu</h2>
+                </header>
+                <ul>
+                    <li><a href="index.html">Homepage</a></li>
+                    <li><a href="#edge">Edge Extraction</a></li>
+                    <li><a href="#sharpen">Image Sharpening</a></li>
+					<li><a href="#hybrid">Hybrid Images</a></li>
+					<li><a href="#stacks">Gaussian & Laplacian Stacks</a></li>
+					<li><a href="#blending">Multiresolution Blending</a></li>
+<!--                    <li>-->
+<!--                        <span class="opener">Submenu</span>-->
+<!--                        <ul>-->
+<!--                            <li><a href="#">Lorem Dolor</a></li>-->
+<!--                            <li><a href="#">Ipsum Adipiscing</a></li>-->
+<!--                            <li><a href="#">Tempus Magna</a></li>-->
+<!--                            <li><a href="#">Feugiat Veroeros</a></li>-->
+<!--                        </ul>-->
+<!--                    </li>-->
+                </ul>
+            </nav>
 
-							<!-- Menu -->
-								<nav id="menu">
-									<header class="major">
-										<h2>Menu</h2>
-									</header>
-									<ul>
-										<li><a href="index.html">Homepage</a></li>
-										<li><a href="generic.html">Generic</a></li>
-										<li><a href="elements.html">Elements</a></li>
-										<li>
-											<span class="opener">Submenu</span>
-											<ul>
-												<li><a href="#">Lorem Dolor</a></li>
-												<li><a href="#">Ipsum Adipiscing</a></li>
-												<li><a href="#">Tempus Magna</a></li>
-												<li><a href="#">Feugiat Veroeros</a></li>
-											</ul>
-										</li>
-										<li><a href="#">Etiam Dolore</a></li>
-										<li><a href="#">Adipiscing</a></li>
-										<li>
-											<span class="opener">Another Submenu</span>
-											<ul>
-												<li><a href="#">Lorem Dolor</a></li>
-												<li><a href="#">Ipsum Adipiscing</a></li>
-												<li><a href="#">Tempus Magna</a></li>
-												<li><a href="#">Feugiat Veroeros</a></li>
-											</ul>
-										</li>
-										<li><a href="#">Maximus Erat</a></li>
-										<li><a href="#">Sapien Mauris</a></li>
-										<li><a href="#">Amet Lacinia</a></li>
-									</ul>
-								</nav>
+            <!-- Section -->
+<!--            <section>-->
+<!--                <header class="major">-->
+<!--                    <h2>Ante interdum</h2>-->
+<!--                </header>-->
+<!--                <div class="mini-posts">-->
+<!--                    <article>-->
+<!--                        <a href="#" class="image"><img src="images/pic07.jpg" alt=""/></a>-->
+<!--                        <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>-->
+<!--                    </article>-->
+<!--                    <article>-->
+<!--                        <a href="#" class="image"><img src="images/pic08.jpg" alt=""/></a>-->
+<!--                        <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>-->
+<!--                    </article>-->
+<!--                    <article>-->
+<!--                        <a href="#" class="image"><img src="images/pic09.jpg" alt=""/></a>-->
+<!--                        <p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>-->
+<!--                    </article>-->
+<!--                </div>-->
+<!--                <ul class="actions">-->
+<!--                    <li><a href="#" class="button">More</a></li>-->
+<!--                </ul>-->
+<!--            </section>-->
 
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>Ante interdum</h2>
-									</header>
-									<div class="mini-posts">
-										<article>
-											<a href="#" class="image"><img src="images/pic07.jpg" alt="" /></a>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="images/pic08.jpg" alt="" /></a>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
-										</article>
-										<article>
-											<a href="#" class="image"><img src="images/pic09.jpg" alt="" /></a>
-											<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore aliquam.</p>
-										</article>
-									</div>
-									<ul class="actions">
-										<li><a href="#" class="button">More</a></li>
-									</ul>
-								</section>
+            <!-- Section -->
+            <section>
+                <header class="major">
+                    <h2>Author</h2>
+                </header>
+                <p>Shengfan Cao</p>
+                <p>Ph.D. student in Mechanical Engineering</p>
+                <p>Lab Affiliation: Model Predictive Control Lab</p>
+                <ul class="contact">
+                    <li class="icon solid fa-envelope"><a href="#">shengfan_cao@berkeley.edu</a></li>
+                    <li class="icon solid fa-phone">(510) 946-0740</li>
+                    <!--										<li class="icon solid fa-home">1234 Somewhere Road #8254<br />-->
+                    <!--										Nashville, TN 00000-0000</li>-->
+                </ul>
+            </section>
 
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>Get in touch</h2>
-									</header>
-									<p>Sed varius enim lorem ullamcorper dolore aliquam aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin sed aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-									<ul class="contact">
-										<li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
-										<li class="icon solid fa-phone">(000) 000-0000</li>
-										<li class="icon solid fa-home">1234 Somewhere Road #8254<br />
-										Nashville, TN 00000-0000</li>
-									</ul>
-								</section>
+            <!-- Footer -->
+<!--            <footer id="footer">-->
+<!--                <p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>.-->
+<!--                    Design: <a href="https://html5up.net">HTML5 UP</a>.</p>-->
+<!--            </footer>-->
 
-							<!-- Footer -->
-								<footer id="footer">
-									<p class="copyright">&copy; Untitled. All rights reserved. Demo Images: <a href="https://unsplash.com">Unsplash</a>. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
-								</footer>
+        </div>
+    </div>
 
-						</div>
-					</div>
+</div>
 
-			</div>
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
-
-	</body>
+</body>
 </html>
