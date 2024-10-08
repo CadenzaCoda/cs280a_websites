@@ -1,0 +1,532 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+<head>
+    <title>Project 3 - Face Morphing and Modelling a Photo Collection</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="assets/css/main.css"/>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+          }
+        });
+    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            type="text/javascript"></script>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
+
+            <!-- Header -->
+            <header id="header">
+                <a href="index.html" class="logo"><strong>Project 3</strong> Face Morphing and Modelling a Photo
+                    Collection</a>
+            </header>
+
+            <!-- Banner -->
+            <section id="annotation">
+                <div class="content">
+                    <header>
+                        <h1>Defining Correspondences<br/>
+                        </h1>
+                    </header>
+                    <p>
+                        Let's think of an image as a set of patches with specific shapes and colors.
+                        Morphing one image into another can then be considered as a combination of morphing of
+                        structures and
+                        cross-dissolving the colors.
+
+                    </p>
+                    <p>
+                        To get started, we need to define the structures by annotating the key feature points in a
+                        consistent way.
+                        In this project, we base our work on the
+                        <a href="https://fei.edu.br/~cet/facedatabase.html">FEI face database</a>, a Brazilian face
+                        database
+                        constructed by the Artificial Intelligence Laboratory of FEI in São Bernardo do Campo, São
+                        Paulo, Brazil.
+                        The normalized and cropped dataset consists of 400 images of 200 individuals, with each photo
+                        annotated with 46 key feature points.
+                        We follow their annotation conventions and annotated our own images.
+                    </p>
+
+                    <figure class="image fit">
+                        <img src="images/manual_annotation.png" alt="">
+                        <figcaption style="text-align:center">Annotating custom images</figcaption>
+                    </figure>
+
+                    <p>
+                        Using the <a href="https://en.wikipedia.org/wiki/Delaunay_triangulation">Delaunay
+                        triangulation</a> algorithm,
+                        we can create a mesh from these key points.
+                    </p>
+
+                    <figure class="image fit">
+                        <img src="images/manual_annotation_triangulation.png" alt="">
+                        <figcaption style="text-align:center">Triangulation of the feature points</figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <section id="midway">
+                <div class="content">
+                    <header>
+                        <h1>
+                            Computing the "Mid-Way Face"<br/>
+                        </h1>
+                    </header>
+                    <p>
+                        Now that we have a triangular mesh of the image, we can "warp" them using affine transformation.
+                    </p>
+                    <h2>
+                        Affine Transformation
+                    </h2>
+                    <p>
+                        To find the affine transformation between two triangles, we need to find a matrix $A$
+                        that has the following form
+                    </p>
+                    <p>
+                        $$
+                        A = \begin{bmatrix} a & b & c \\ d & e & f \\ 0 & 0 & 1\end{bmatrix}
+                        $$
+                    </p>
+
+                    <p>
+                        such that
+                    </p>
+                    <p>
+                        $$
+                        \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = A\begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+                        $$
+                    </p>
+                    <p>
+                        Note that the original and target triangles are given, so we have the following
+                        equations about the parameters in $A$.
+                    </p>
+
+                    <p>
+                        $$
+                        \begin{align}
+                        ax_i + by_i + c_i &= x_i' \\
+                        dx_i + ey_i + f_i &= y_i'
+                        \end{align}
+                        $$ for $i \in \{1, 2, 3\}$.
+                    </p>
+                    <p>
+                        Let $v = \begin{bmatrix}a & b & c & d & e & f\end{bmatrix}^T$,
+                    </p>
+                    <p>
+                        $$
+                        \underbrace{\begin{bmatrix}x_1 & y_1 & 1 & 0 & 0 & 0 \\
+                        0 & 0 & 0 & x_1 & y_1 & 1\\
+                        x_2 & y_2 & 1 & 0 & 0 & 0 \\
+                        0 & 0 & 0 & x_2 & y_2 & 1\\
+                        x_3 & y_3 & 1 & 0 & 0 & 0 \\
+                        0 & 0 & 0 & x_3 & y_3 & 1
+                        \end{bmatrix}}_{P}v = \begin{bmatrix}x_1' \\ y_1' \\ x_2' \\ y_2' \\ x_3' \\
+                        y_3'\end{bmatrix}
+                        $$
+                    </p>
+
+                    <p>
+                        We denote the coefficient matrix as $P$. It can be shown that $P$ is guaranteed to have full
+                        rank and therefore is invertible.
+                    </p>
+                    <p>
+                        By applying affine transformation on every triangle in the mesh, we can effectively "warp" the
+                        structure of one image into another.
+                        The process looks like this:
+                    </p>
+                    <figure class="image fit">
+                        <img src="images/morphing_average_Shengfan.gif" alt="">
+                        <figcaption style="text-align:center">Warping the <a href="#average">average face</a> into my
+                            geometry
+                        </figcaption>
+                    </figure>
+
+                    <h2>
+                        Cross-dissolving
+                    </h2>
+                    <p>
+                        As for the appearance, we can simply transition between two images by doing an affine
+                        combination
+                        of the two images.
+                        $$
+                        I_o = \beta I_{i1} + (1 - \beta) I_{i2}
+                        $$
+                        Note that this works best only if the two images already have the same structure, so this step
+                        should take place after warping.
+                    </p>
+
+                    <h2>
+                        Results
+                    </h2>
+                    <p>
+                        To get the average face, we first find the average architecture of the two images and morph both
+                        images to it.
+                        Then, we simply cross-dissolve the colors of the two images.
+                    </p>
+
+                    <figure class="image fit">
+                        <img src="images/midway_shengfan_sam.png" alt="">
+                        <figcaption style="text-align:center">"Mid-way face" between my classmate Sam and myself
+                        </figcaption>
+                    </figure>
+                    <figure class="image fit">
+                        <img src="images/midway_shengfan_147b.png" alt="">
+                        <figcaption stype="text-align:center">"Mid-way face" between me and one of the images in the FEI
+                            dataset
+                        </figcaption>
+                    </figure>
+                </div>
+            </section>
+
+            <section id="sequence">
+                <header>
+                    <h1>
+                        The Morph Sequence
+                    </h1>
+                </header>
+                <p>
+                    Note that the "Mid-way face" is a special case of mixing two images.
+                    By selecting the warping fraction and dissolve fraction to linearly transition between 0 and 1, we
+                    can create a smooth sequence of one image into another.
+                    Furthermore, if we string together the morphing process between multiple images, we can create a
+                    cool morphing sequence.
+                </p>
+                <p>
+                    Below are some examples.
+                </p>
+                <figure class="image fit">
+                    <img src="images/Shengfan_%5BFEI%5D113b_%5BFEI%5D6.gif" alt="">
+                    <figcaption style="text-align:center">The morphing sequence
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section id="average">
+                <header class="content">
+                    <h1>The "Mean face" of a population</h1>
+                </header>
+                <p>
+                    We can also take the average of an entire dataset and get the "mid-way face" of the entire
+                    population.
+                </p>
+                <p>
+                    Below is the average of the entire FEI dataset.
+                </p>
+                <figure class="image fit">
+                    <img style="max-width: 300px; margin-left: auto; margin-right: auto" src="images/average.png"
+                         alt="">
+                    <figcaption style="text-align:center">The average of the entire FEI dataset
+                    </figcaption>
+                </figure>
+
+                <p>
+                    We can also calculate the mean of a sub-population in the dataset, as shown in the table below.
+                </p>
+
+                <table style="table-layout: fixed">
+                    <tr>
+                        <th style="text-align: center">Male</th>
+                        <th style="text-align: center">Male (Neutral)</th>
+                        <th style="text-align: center">Male (Smiling)</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/average_male.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/average_male_neutral.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/average_male_smile.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center">Female</th>
+                        <th style="text-align: center">Female (Neutral)</th>
+                        <th style="text-align: center">Female (Smiling)</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/average_female.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/average_female_neutral.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/average_female_smile.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
+                </table>
+
+                <p>
+                    With the same morphing algorithm, we can morph each image in the dataset into the population mean.
+                    Here are some examples:
+                </p>
+                <figure class="image fit">
+                    <img src="images/FEI_averaging.gif" alt="">
+                    <figcaption style="text-align:center">Morphing images in the dataset into the average face
+                    </figcaption>
+                </figure>
+                <p>
+                    This can of course also be done on a subpopulation.
+                </p>
+                <figure class="image fit">
+                    <img src="images/FEI_male_averaging.gif" alt="">
+                    <figcaption style="text-align:center">Morphing images in the dataset into the average face
+                    </figcaption>
+                </figure>
+
+                <p>
+                    This is what it looks like to morph the average into my geometry.
+                </p>
+                <figure class="image fit">
+                    <img src="images/morphing_average_Shengfan.png" alt="">
+                    <figcaption style="text-align:center">Morphing population average into my geometry
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/morphing_Shengfan_average.png" alt="">
+                    <figcaption style="text-align:center">Morphing my face into the population average geometry
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section id="caricature">
+                <header class="content">
+                    <h1>Caricatures: Extrapolating from the mean</h1>
+                </header>
+                <p>
+                    So far, we've been choosing the warping and dissolving fraction to be between $[0, 1]$.
+                    If this is no longer the case, the we can extrapolate and go beyond the convex hull as defined by
+                    the dataset.
+                    Intuitively, this enhances the distinctive features of a given example compared to the mean.
+                </p>
+                <figure class="image fit">
+                    <img src="images/extrapolating.png" alt="">
+                    <figcaption style="text-align:center">Extrapolating from population mean. $\beta$ is the ratio of my
+                        image.
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section id="change">
+                <header class="content">
+                    <h1>Changing Gender and Facial Expression</h1>
+                </header>
+                <p>
+                    It is possible to enhance specific features of an image by morphing with the corresponding
+                    population average data.
+                    For example,
+                </p>
+                <figure class="image fit">
+                    <img src="images/change_Shengfan_female_smile_0.6_shape_appearance.png" alt="">
+                    <!--                    <figcaption style="text-align:center">-->
+                    <!--                        -->
+                    <!--                    </figcaption>-->
+                </figure>
+                <p>
+                    We can compare the results of morphing just the shape, just the appearance, or both.
+                </p>
+                <table style="table-layout: fixed">
+                    <tr>
+                        <th style="text-align: center">Shape</th>
+                        <th style="text-align: center">Shape + Appearance</th>
+                        <th style="text-align: center">Appearance</th>
+                    </tr>
+                    <tr>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/change_Shengfan_female_smile_0.6_shape_result.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/change_Shengfan_female_smile_0.6_shape_appearance_result.png" alt="">
+                            </figure>
+                        </th>
+                        <th>
+                            <figure class="image fit">
+                                <img src="images/change_Shengfan_female_smile_0.6_appearance_result.png" alt="">
+                            </figure>
+                        </th>
+                    </tr>
+                </table>
+                <p>
+                    Among these choices, changing both the shape and appearance leads to the best results.
+                </p>
+            </section>
+
+            <section id="pca">
+                <header class="content">
+                    <h1>PCA Analysis and Extrapolating in the new basis</h1>
+                </header>
+                <p>
+                    Another way to process the image data is to flatten the pixels into long vectors.
+                    By stacking up the vectors into a matrix, we can use tools in linear algebra to analyze its
+                    components.
+                </p>
+                <p>
+                    One idea is to use Principal Component Analysis (PCA) to extract the most prominent features.
+                    This is sometimes referred to as "eigen-faces".
+                </p>
+                <figure class="image fit">
+                    <img src="images/Eigenfaces_of_FEI_dataset.png" alt="">
+                    <figcaption style="text-align:center">Eigen-faces of the FEI dataset
+                    </figcaption>
+                </figure>
+                <p>
+                    Of course, we can do this for a sub-population again.
+                    Below is the eigen-faces of smiling males in the FEI dataset.
+                </p>
+                <figure class="image fit">
+                    <img src="images/Eigenfaces_of_FEI_dataset(male,smile).png" alt="">
+                    <figcaption style="text-align:center">Eigen-faces of smiling males in the FEI dataset
+                    </figcaption>
+                </figure>
+
+                <p>
+                    These eigen-faces also serve as a new set of basis.
+                    We can find the representation of an image in this set of basis by taking the inner product between
+                    the image and each of the eigen-face.
+                    Also, we can attempt to "reconstruct" a face by taking a linear combination of the eigen-faces.
+                </p>
+                <p>
+                    Below is the reconstructed face with the smiling male eigen-faces.
+                    Note the reconstruction is very noisy because of out-of-distribution features.
+                </p>
+                <figure class="image fit">
+                    <img src="images/PCA_reconstructed_Shengfan_average_male_smile_0.0.png" alt="">
+                    <figcaption style="text-align:center">My image reconstructed with the smiling male eigen-faces
+                    </figcaption>
+                </figure>
+                <p>
+                    Recall the singular decomposition of a matrix $A = U \Sigma V^T$, where $A \in \mathbb{R}^{N \times
+                    R}$,
+                    $N$ is the number of images in the dataset, and $R$ is the number of pixels in each image.
+                    The eigen-faces are first $r$ vectors in the matrix $V$, where $r = \mathrm{rank}(A)$.
+                    Since $r \leq \min (N, R)$, the number of eigen-faces cannot exceed the number of images in the
+                    dataset.
+                </p>
+                <p>
+                    The reconstruction works much better if we downscale the images first.
+                </p>
+                <figure class="image fit">
+                    <img src="images/PCA_reconstruction_low_res.png" alt="">
+                    <figcaption style="text-align:center">My image reconstructed with the eigen-faces of downscaled FEI
+                        dataset. Images are downscaled to 25*30.
+                    </figcaption>
+                </figure>
+                <p>
+                    We can also attempt to do a caricature in the PCA basis.
+                </p>
+                <figure class="image fit">
+                    <img src="images/PCA_caricature.png" alt="">
+                    <figcaption style="text-align:center">Caricature created in the PCA basis.
+                        The images are downscaled to 50*60, and the dataset consists of 400 images.
+                        The average image is created by directly taking the mean of all images in the dataset.
+                        The caricature is created with $I_o = 1.5 I_{i} - 0.5 I_{\mathrm{avg}}$.
+                    </figcaption>
+                </figure>
+                <p>
+                    Compared to the original image, the skin tone is shifted to the darker side, and the eyes are
+                    rendered smaller, enhancing the features in the original image.
+                    On the dataset, the performance is less desirable.
+                    However, this approach could potentially do better if the dataset contained more images.
+                </p>
+            </section>
+
+            <section id="ref">
+                <header class="major">
+                    <h2>References</h2>
+                </header>
+                <ul>
+                    <li>
+                        FEI face dataset: <a href="http://fei.edu.br/~cet/facedatabase.html">http://fei.edu.br/~cet/facedatabase.html</a>.
+                    </li>
+                </ul>
+
+                <p>HTML template: <a href="https://html5up.net/editorial">Editorial by HTML5UP</a></p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="inner">
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>Menu</h2>
+                </header>
+                <ul>
+                    <li><a href="#annotation">Defining Correspondences</a></li>
+                    <li><a href="#midway">Mid-Way Face</a></li>
+                    <li><a href="#sequence">Morphing Sequence</a></li>
+                    <li><a href="#average">Mean Face</a></li>
+                    <li><a href="#caricature">Caricatures</a></li>
+                    <li>
+                        <span class="opener">Bells and Whistles</span>
+                        <ul>
+                            <li><a href="#change">Changing Gender</a></li>
+                            <li><a href="#pca">PCA</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Section -->
+            <section>
+                <header class="major">
+                    <h2>Author</h2>
+                </header>
+                <p>Shengfan Cao</p>
+                <p>Ph.D. student in Mechanical Engineering</p>
+                <p>Lab Affiliation: Model Predictive Control Lab</p>
+                <ul class="contact">
+                    <li class="icon solid fa-envelope"><a href="#">shengfan_cao@berkeley.edu</a></li>
+                    <li class="icon solid fa-phone">(510) 946-0740</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
