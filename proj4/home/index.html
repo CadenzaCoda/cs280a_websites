@@ -1,0 +1,467 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+<head>
+    <title>Project 4 - Image Warping and Mosaicing</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="assets/css/main.css"/>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+          }
+        });
+    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            type="text/javascript"></script>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
+
+            <!-- Header -->
+            <header id="header">
+                <a href="index.html" class="logo"><strong>Project 4</strong> Image Warping and Mosaicing</a>
+            </header>
+
+            <!-- Banner -->
+            <section id="pictures">
+                <div class="content">
+                    <header>
+                        <h1>Shoot the Pictures<br/>
+                        </h1>
+                    </header>
+                    <p>
+                        In this project, most of the images are taken from a iPhone 13 Pro.
+                        Some of the images are taken with a digital camera.
+                    </p>
+                    <p>
+                        Here are some examples of the images used in this project.
+                    </p>
+
+                    <div class="box alt">
+                        <div class="row gtr-50 gtr-uniform">
+                            <div class="col-4"><span class="image fit"><img
+                                    src="images/data/crater_cropped/crater_cropped%20(1).png" alt=""/></span></div>
+                            <div class="col-4"><span class="image fit"><img
+                                    src="images/data/crater_cropped/crater_cropped%20(2).png" alt=""/></span></div>
+                            <div class="col-4"><span class="image fit"><img
+                                    src="images/data/crater_cropped/crater_cropped%20(3).png" alt=""/></span></div>
+                            <!-- Break -->
+
+                            <div class="col-3"><span class="image fit"><img src="images/data/mpc_lab/mpc_lab%20(1).jpg"
+                                                                            alt=""></span></div>
+                            <div class="col-3"><span class="image fit"><img src="images/data/mpc_lab/mpc_lab%20(2).jpg"
+                                                                            alt=""></span></div>
+                            <div class="col-3"><span class="image fit"><img src="images/data/mpc_lab/mpc_lab%20(3).jpg"
+                                                                            alt=""></span></div>
+                            <div class="col-3"><span class="image fit"><img src="images/data/mpc_lab/mpc_lab%20(4).jpg"
+                                                                            alt=""></span></div>
+                            <!--                            <div class="col-3"><span class="image fit"><img src="images/data/mpc_lab/mpc_lab%20(5).jpg" alt=""></span></div>-->
+
+                            <!-- Break -->
+                            <div class="col-6"><span class="image fit"><img
+                                    src="images/data/yosemite/yosemite%20(1).jpg" alt=""></span></div>
+                            <div class="col-6"><span class="image fit"><img
+                                    src="images/data/yosemite/yosemite%20(2).jpg" alt=""></span></div>
+
+                            <!-- Break -->
+                            <div class="col-6"><span class="image fit"><img
+                                    src="images/data/new_mexico/new_mexico%20(1).jpg" alt=""></span></div>
+                            <div class="col-6"><span class="image fit"><img
+                                    src="images/data/new_mexico/new_mexico%20(2).jpg" alt=""></span></div>
+                        </div>
+                    </div>
+                    <p>
+                        Shout out to my partner <a href="https://www.instagram.com/yilun.photos/">Yilun</a> for
+                        providing
+                        the amazing photo at Meteor Crater, Arizona.
+                        Go check out his other amazing photos!
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <div class="content">
+                    <header>
+                        <h1>Recover Homographies<br/></h1>
+                    </header>
+                </div>
+                <h2>How It Works</h2>
+                <p>
+                    Similar to <a href="../../proj3/home/index.html#midway">Project 3</a>, we need to find the best warp
+                    between two images.
+                </p>
+                <p>
+                    The goal is to find $$\mathbf{H} = \begin{bmatrix}a & b & c \\ d & e & f \\ g & h & 1\end{bmatrix}$$
+                    such that $$\mathbf{H} = \mathrm{arg} \min_\mathbf{H} \sum_{(\mathbf{x}, \mathbf{x'}) \in
+                    \mathcal{D}} \Vert \mathbf{Hx} -
+                    \mathbf{x'}\Vert_2^2$$
+                    where $\mathbf{x} = \begin{bmatrix}x & y & 1\end{bmatrix}^T$ and $\mathbf{x'} = \begin{bmatrix}wx' &
+                    wy' & w\end{bmatrix}^T$.
+
+                    Here, $\begin{bmatrix} x & y \end{bmatrix}$ and $\begin{bmatrix} x' & y' \end{bmatrix}$ are the
+                    coordinates of the feature points in the source and destination images.
+                    $w$ is the scaling factor.
+                    $\mathcal{D}$ denotes the set of pairs of feature points in the two images.
+                </p>
+                <p>
+                    We can rewrite this into a least squares problem on the parameters in $\mathbf{H}$.
+                    For each pair of feature point $\mathbf{x}_i$ and $\mathbf{x}_i'$,
+                    $$\underbrace{\begin{bmatrix} x_i & y_i & 1 & 0 & 0 & 0 & -x_i x_i' & -y_i x_i' \\ 0 & 0 & 0 & x_i &
+                    y_i
+                    & 1 & -x_i y_i' & -y_i y_i'\end{bmatrix}}_{P_i}
+                    \begin{bmatrix}a \\ b \\ c \\ d \\ e \\ f \\ g \\ h\end{bmatrix} = \underbrace{\begin{bmatrix}x_i'
+                    \\
+                    y_i'\end{bmatrix}}_{v_i}$$
+                </p>
+                <p>
+                    Stack $P_i$'s and $v_i$'s vertically, and we get a classical least squares problem, whose solution
+                    is
+                    given by $(P^T P)^{-1} P^T v$.
+                </p>
+
+
+                <h2>Defining correspondences</h2>
+                <p>
+                    Much like Project 3, we need to manually label the key features of the images before we can find the
+                    homography.
+                    Note that the images are labeled pairwise, so the features selected in each pair can be different,
+                    even though they are taken from the same scene.
+                </p>
+                <p>
+                    This is a laborious process, especially if the image chain is long.
+                    As an example, below are the manually selected feature pairs of the Meteor Crater photos, with
+                    feature points marked as <strong><span style="color: red">red</span></strong> dots.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/crater_cropped/crater_cropped%20(1)_crater_cropped%20(2)_manually_annotated.png"
+                         alt="">
+                    <img src="images/outputs/crater_cropped/crater_cropped%20(2)_crater_cropped%20(3)_manually_annotated.png"
+                         alt="">
+                </figure>
+            </section>
+
+            <section id="rectify">
+                <header class="content">
+                    <h1>Image Rectification</h1>
+                </header>
+                <p>
+                    One straightforward way to test the algorithm is image rectification.
+                </p>
+                <p>
+                    Below is an image of a checkerboard and the location of the vertices of the middle 6x6 squares
+                    (annotated with <strong><span style="color: green">green</span></strong> points).
+                </p>
+                <p>
+                    We want to warp the image such that the vertices form a perfect square.
+                    The desired location of the annotated points in the warped image are marked in <strong><span
+                        style="color: red">red</span></strong> points.
+                </p>
+                <p>
+                    The estimated region after the warp is highlighted with its vertices marked in
+                    <strong><span style="color: blue">blue</span></strong> points.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/checker_board_annotated.png" alt="">
+                    <figcaption style="text-align: center">Annotated checker board and estimated warp result.
+                    </figcaption>
+                </figure>
+
+                <p>
+                    And here is the result of actually warping the entire image.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/checker_board_warped.png" alt="">
+                    <figcaption style="text-align: center">Warped checker board. Note the canvas was enlarged just
+                        enough to keep both the original and warped image. This will be useful in blending images after
+                        warping.
+                    </figcaption>
+                </figure>
+
+                <p>
+                    Below is another example.
+                </p>
+                <div class="box alt">
+                    <div class="row gtr-50 gtr-uniform">
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/Yilun.png" alt=""/>
+                                <figcaption style="text-align: center">Yilun giving a talk.</figcaption>
+                            </figure>
+                        </div>
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/outputs/Yilun_annotated.png" alt="">
+                                <figcaption style="text-align: center">Annotation and the desired warp.</figcaption>
+                            </figure>
+                        </div>
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/outputs/Yilun_warped.png" alt="">
+                                <figcaption style="text-align: center">Warped image.</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <figure class="image fit">
+                    <img src="images/outputs/Yilun_slides.png" alt=""/>
+                    <figcaption style="text-align: center">
+                        Closer look of Yilun's slides after rectification. Super cool work!
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section id="blending">
+                <div class="content">
+                    <header>
+                        <h1>
+                            Blending the Images into a Mosaic<br/>
+                        </h1>
+                    </header>
+                    <p>
+                        With the feature points from manual annotation, we can recover the homography between two images
+                        and recursively blend them into a growing mosaic.
+                    </p>
+                    <p>
+                        Note that the homography can be accumulated, and therefore warping from image $A \rightarrow C$
+                        can be achieved by the composition of $A \rightarrow B$ then $B \rightarrow C$.
+                        Utilizing this fact, we first label each pair of adjacent images and get the estimated
+                        homography matrix.
+                        Then, we warp all images towards the center image.
+                    </p>
+                    <p>
+                        Below are the step-by-step process of warping.
+                    </p>
+                    <h3>1. Meteor Crater Natural Landmark (photo by Yilun Ma)</h3>
+                    <figure class="image fit">
+                        <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_1.png" alt="">
+                        <figcaption style="text-align: center">Warping and blending the left image to the center.
+                        </figcaption>
+                    </figure>
+                    <figure class="image fit">
+                        <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_2.png" alt="">
+                        <figcaption style="text-align: center">Warping and blending blend the right image to the
+                            previous result.
+                        </figcaption>
+                    </figure>
+
+                    <p>
+                        So far, we're just taking the average between the overlapping area, and the boundary of the
+                        original images are very clearly visible.
+                        To get smoother blending, we adopt Lowe's two-band blending technique, where we create a simple
+                        two-level pyramid of the image, and use a smooth alpha channel to blend the low frequency and a
+                        binary alpha channel for the high-frequency.
+                    </p>
+                    <p>
+                        Below is the comparison between the results.
+                        With two-band blending, the edges are gone, and the details of the center image are sharper.
+                        However, this blending technique still left a faint shadow in the corners, which is discernible
+                        if the color is monotonous and the exposure between photos are different.
+                    </p>
+
+                    <div class="box alt">
+                        <div class="row gtr-50 gtr-uniform">
+                            <div class="col-6">
+                                <figure class="image fit">
+                                    <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_2_result.png"
+                                         alt=""/>
+                                    <figcaption style="text-align: center">Average mixture.</figcaption>
+                                </figure>
+                            </div>
+                            <div class="col-6">
+                                <figure class="image fit">
+                                    <img src="images/outputs/crater_cropped/crater_cropped_auto_mosaic_stage_2_result.png"
+                                         alt="">
+                                    <figcaption style="text-align: center">Two-band blending.</figcaption>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>More results</h2>
+                    <h3>2. San Francisco from Berkeley Marina on a Cloudy Day</h3>
+                    <h4>Original Images</h4>
+                    <div class="box alt">
+                        <div class="row gtr-50 gtr-uniform">
+                            <div class="col-4">
+                                <figure class="image fit">
+                                    <img src="images/data/marina/marina%20(1).jpg" alt=""/>
+                                </figure>
+                            </div>
+                            <div class="col-4">
+                                <figure class="image fit">
+                                    <img src="images/data/marina/marina%20(2).jpg" alt=""/>
+                                </figure>
+                            </div>
+                            <div class="col-4">
+                                <figure class="image fit">
+                                    <img src="images/data/marina/marina%20(3).jpg" alt=""/>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Annotating and Pre-warping</h4>
+                    <div class="box alt">
+                        <div class="row gtr-50 gtr-uniform">
+                            <div class="col-6">
+                                <figure class="image fit">
+                                    <img src="images/outputs/marina/marina%20(1)_annotated.png" alt=""/>
+                                </figure>
+                            </div>
+                            <div class="col-6">
+                                <figure class="image fit">
+                                    <img src="images/outputs/marina/marina%20(3)_annotated.png" alt=""/>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                    <p>Remember that the middle image, marina (2), is the reference and therefore doesn't warp! </p>
+
+                    <h4>Warping and Blending</h4>
+                    <figure class="image fit">
+                        <img src="images/outputs/marina/marina_mosaic_stage_1.png" alt="">
+                        <figcaption style="text-align: center">Warping and blending the right image to the center.
+                        </figcaption>
+                    </figure>
+                    <figure class="image fit">
+                        <img src="images/outputs/marina/marina_mosaic_stage_2.png" alt="">
+                        <figcaption>Warping and blending the left image to the previous result.</figcaption>
+                    </figure>
+
+                    <h4>Final Result</h4>
+                    <figure class="image fit">
+                        <img src="images/outputs/marina/marina_mosaic_stage_2_result.png" alt="">
+                    </figure>
+
+                    <p>
+                        <strong>Interesting fact</strong>: This set of images turned out very hard for the automatic
+                        stitching algorithm.
+                        One possible reason is that there are very few significant features in the majority of the
+                        image.
+                        Plus, the water and the sky are not entirely stationary!
+                        This only worked by putting most of the feature points on the buildings, which seems
+                        insignificant in the sense of corners.
+                    </p>
+
+                    <h3>3. Petroglyph National Monument, New Mexico</h3>
+                    <h4>Original Images</h4>
+                    <div class="box alt">
+                        <div class="row gtr-50 gtr-uniform">
+                            <div class="col-6">
+                                <figure class="image fit">
+                                    <img src="images/data/new_mexico/new_mexico%20(1).jpg" alt=""/>
+                                </figure>
+                            </div>
+                            <div class="col-6">
+                                <figure class="image fit">
+                                    <img src="images/data/new_mexico/new_mexico%20(2).jpg" alt=""/>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4>Annotating and Pre-warping</h4>
+                    <figure class="image fit">
+                        <img src="images/outputs/new_mexico/new_mexico%20(1)_annotated.png" alt="">
+                    </figure>
+
+                    <h4>Warping and Blending</h4>
+                    <figure class="image fit">
+                        <img src="images/outputs/new_mexico/new_mexico_mosaic_stage_1.png" alt="">
+                    </figure>
+
+                    <h4>Final Result</h4>
+                    <figure class="image fit">
+                        <img src="images/outputs/new_mexico/new_mexico_mosaic_stage_1_result.png" alt="">
+                    </figure>
+
+                    <p>
+                        <strong>Spoiler:</strong> Note that there is very little overlap between the two images, so the
+                        error in the annotation has a much more significant impact on the result.
+                        In the later section, we'll see the automatic stitching does a much more precise job than I did.
+                    </p>
+                </div>
+            </section>
+
+            <section id="second">
+                <header class="content">
+                    <h1>Automatic Image Stitching</h1>
+                </header>
+                <p>
+                    Instead of manually labeling the images, we seek ways to automatically find interesting features
+                    and find correspondences among them.
+                </p>
+                <p>
+                    The second part of the project is about the algorithm to achieve this.
+                </p>
+
+                <h2>Corner detection</h2>
+                TODO
+            </section>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="inner">
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>Menu</h2>
+                </header>
+                <ul>
+                    <li><a href="#annotation">Defining Correspondences</a></li>
+                    <li><a href="#midway">Mid-Way Face</a></li>
+                    <li><a href="#sequence">Morphing Sequence</a></li>
+                    <li><a href="#average">Mean Face</a></li>
+                    <li><a href="#caricature">Caricatures</a></li>
+                    <li>
+                        <span class="opener">Bells and Whistles</span>
+                        <ul>
+                            <li><a href="#change">Changing Gender</a></li>
+                            <li><a href="#pca">PCA</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Section -->
+            <section>
+                <header class="major">
+                    <h2>Author</h2>
+                </header>
+                <p>Shengfan Cao</p>
+                <p>Ph.D. student in Mechanical Engineering</p>
+                <p>Lab Affiliation: Model Predictive Control Lab</p>
+                <ul class="contact">
+                    <li class="icon solid fa-envelope"><a href="#">shengfan_cao@berkeley.edu</a></li>
+                    <li class="icon solid fa-phone">(510) 946-0740</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
