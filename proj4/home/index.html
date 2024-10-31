@@ -93,7 +93,7 @@
                 </div>
             </section>
 
-            <section>
+            <section id="homography">
                 <div class="content">
                     <header>
                         <h1>Recover Homographies<br/></h1>
@@ -134,7 +134,7 @@
                 </p>
 
 
-                <h2>Defining correspondences</h2>
+                <h2 id="labeling">Defining correspondences</h2>
                 <p>
                     Much like Project 3, we need to manually label the key features of the images before we can find the
                     homography.
@@ -245,7 +245,7 @@
                     <p>
                         Below are the step-by-step process of warping.
                     </p>
-                    <h3>1. Meteor Crater Natural Landmark (photo by Yilun Ma)</h3>
+                    <h3 id="crater-manual">1. Meteor Crater Natural Landmark (photo by Yilun Ma)</h3>
                     <figure class="image fit">
                         <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_1.png" alt="">
                         <figcaption style="text-align: center">Warping and blending the left image to the center.
@@ -276,7 +276,7 @@
                         <div class="row gtr-50 gtr-uniform">
                             <div class="col-6">
                                 <figure class="image fit">
-                                    <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_2_result.png"
+                                    <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_2_result_average.png"
                                          alt=""/>
                                     <figcaption style="text-align: center">Average mixture.</figcaption>
                                 </figure>
@@ -291,7 +291,7 @@
                         </div>
                     </div>
                     <h2>More results</h2>
-                    <h3>2. San Francisco from Berkeley Marina on a Cloudy Day</h3>
+                    <h3 id="marina-manual">2. San Francisco from Berkeley Marina on a Cloudy Day</h3>
                     <h4>Original Images</h4>
                     <div class="box alt">
                         <div class="row gtr-50 gtr-uniform">
@@ -356,7 +356,7 @@
                         insignificant in the sense of corners.
                     </p>
 
-                    <h3>3. Petroglyph National Monument, New Mexico</h3>
+                    <h3 id="nm-manual">3. Petroglyph National Monument, New Mexico</h3>
                     <h4>Original Images</h4>
                     <div class="box alt">
                         <div class="row gtr-50 gtr-uniform">
@@ -398,7 +398,7 @@
 
             <section id="second">
                 <header class="content">
-                    <h1>Automatic Image Stitching</h1>
+                    <h1>Feature Matching and Auto-stitching</h1>
                 </header>
                 <p>
                     Instead of manually labeling the images, we seek ways to automatically find interesting features
@@ -408,8 +408,401 @@
                     The second part of the project is about the algorithm to achieve this.
                 </p>
 
-                <h2>Corner detection</h2>
-                TODO
+                <h2 id="harris">Harris Corner Detector</h2>
+                <p>
+                    From the first part of the project, we learn that corners can be used as easily identifiable
+                    features.
+                    Here, we use the <a href="https://docs.opencv.org/4.x/dc/d0d/tutorial_py_features_harris.html">Harris
+                    interest point detector</a> to find all the corners of an image.
+                </p>
+                <p>
+                    Below is the Harris corner measure of the checkerboard image.
+                </p>
+                <figure class="image fit">
+                    <img src="images/data/checker_board.jpg" alt="">
+                    <figcaption style="text-align: center">The checker board image.</figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/checker_board_harris_normalized.png" alt="">
+                    <figcaption style="text-align: center">Harris corner measure of the <a
+                            href="images/data/checker_board.jpg">checker board image</a>.
+                        Pay close attention and you'll see an array of brighter dots. Those are the vertices of the
+                        squares!
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/checker_board_harris_corner_scatter.png" alt="">
+                    <figcaption style="text-align: center">Harris corners.</figcaption>
+                </figure>
+
+                <p>
+                    The result has been filtered to only keep pixels whose corner response is larger than some
+                    threshold.
+                    However, this is clearly far from enough.
+                </p>
+
+                <h2 id="anms">Adaptive Non-Maximal Suppression (ANMS)</h2>
+                <p>
+                    One idea is to keep only the pixels with the largest corner response.
+                    However, <a href="https://ieeexplore.ieee.org/document/1467310">Brown et al.</a> pointed out that
+                    this leads to an imbalance in the spatial distribution of
+                    feature points.
+                    Instead, we adopt Adaptive Non-Maximal Suppression (ANMS) to select $N$ points that has the largest
+                    corner response within the radius of $r$, where $r$ is maximized across the entire image.
+                </p>
+                <p>
+                    Below is the result of applying ANMS on the checker board image with $N = 60$.
+                    We can see from this example that the result of ANMS are indeed the vertices of the squares on the
+                    board.
+                    Also, some of the vertices are not selected because they're would have been too close to their
+                    neighbors, which shows that ANMS is effective in ensuring the points are spatially well-separated
+                    from each other.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/checker_board_harris_random.png" alt="">
+                </figure>
+
+                <h2 id="descriptor">Feature Descriptor Extraction</h2>
+                <p>
+                    With the Harris corner detector and the ANMS algorithm, we can already automatically extract
+                    interesting features from images.
+                    The next step is to match between them.
+                </p>
+                <p>
+                    Following Brown's paper, we crop out a 40x40 window around each feature point, and downsample them
+                    to 8x8 patches.
+                    Below are example of patches that are sampled from the checker board image.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/checker_board_descriptors.png" alt="">
+                    <figcaption style="text-align: center">
+                        Feature descriptors examples from the checker board image.
+                        They may look alike because of the repetitive nature of the checker board pattern.
+                        This will no longer be the case for our images!
+                    </figcaption>
+                </figure>
+
+                <h2 id="matching">Feature Matching</h2>
+                <p>
+                    Finally, we will compare the patches from the two images we're trying to stitch together and find
+                    matches.
+                </p>
+                <p>
+                    Assume our goal is to find the best match in the target image $B$ for each patch in the source image
+                    $A$.
+                    We start by finding the top 2 matches for all patches in the source image $A$.
+                    Here we apply Lowe's thresholding criteria and compare the ratio between the error of 1-NN/2-NN.
+                    For good matches, this ratio should be low.
+                    In Brown's paper, the optimal threshold for the squared error between 1-NN/2-NN appears to be 0.1,
+                    but with the <a href="#ransac">RANSAC</a> algorithm, it's acceptable to be more lenient with
+                    thresholding at this step.
+                </p>
+                <p>
+                    Here is one example with two images taken from Yosemite.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/yosemite/yosemite%20(1)_yosemite%20(2)_Feature_Matching.png" alt="">
+                    <figcaption style="text-align: center">
+                        Feature matching between two images taken at Yosemite.
+                        The transparent <strong><span style="color: green">green</span></strong> points are all feature
+                        points selected by the Harris corner detector and ANMS.
+                        The <strong><span style="color: red">red</span></strong> points are the matched points selected
+                        through matching the feature descriptors.
+                    </figcaption>
+                </figure>
+
+                <h2 id="ransac">Random Sample Consensus (RANSAC)</h2>
+                <p>
+                    From the example above, we can see most of the points are indeed valid matches.
+                    However, there are still outliers, which is undesirable because least squares optimization is
+                    sensitive to outliers.
+                </p>
+                <p>
+                    To find the best homography $H$, we implemented <a
+                        href="https://en.wikipedia.org/wiki/Random_sample_consensus">Random Sample Consensus
+                    (RANSAC)</a>, an outlier detection algorithm.
+                    In RANSAC, we iteratively select four random pairs of points and <a href="#homography">compute the
+                    homography $H$</a>.
+                    Then, we apply the transformation on all feature points $\mathbf{x}$ in the source image $A$, and
+                    count the number of near matches with the points in image $B$.
+                    The goal is to find the homography that leads to the most number of near matches. In other words,
+                    $$H^{*} = \mathrm{arg} \max_H \vert \{ (\mathbf{x}, \mathbf{x'}) \vert \Vert \mathbf{Hx} -
+                    \mathbf{x'} \Vert < \epsilon \}\vert$$
+                </p>
+                <p>
+                    In the example above, after 100000 iterations, the best set of points found by the RANSAC algorithm
+                    is as follows.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/yosemite/yosemite%20(1)_yosemite%20(2)_Feature_Matching_with_RANSAC.png"
+                         alt="">
+                    <figcaption style="text-align: center">
+                        The best set of feature pairs found by RANSAC. $\epsilon = 1$.
+                    </figcaption>
+                </figure>
+
+                <h2 id="auto-mosaic">Producing Mosaics</h2>
+                <p>
+                    Now that we have the feature pairs, we can use <a href="#blending">the same warping procedure</a>
+                    to stitch the images together.
+                </p>
+                <figure class="image fit">
+                    <img src="images/outputs/yosemite/yosemite%20(1)_annotated.png" alt="">
+                    <figcaption style="text-align: center">
+                        Annotated image and expected warping.
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/yosemite/yosemite_mosaic_stage_1_result.png" alt="">
+                    <figcaption style="text-align: center">
+                        Result of Auto-stitching the Yosemite images.
+                    </figcaption>
+                </figure>
+
+                <h2 id="results">More results</h2>
+                <h3 id="nm-auto">2. Petroglyph National Monument, New Mexico</h3>
+                <h4>Original Images</h4>
+                <div class="row gtr-50 gtr-uniform">
+                    <div class="col-6">
+                        <figure class="image fit">
+                            <img src="images/data/new_mexico/new_mexico%20(1).jpg" alt="">
+                        </figure>
+                    </div>
+                    <div class="col-6">
+                        <figure class="image fit">
+                            <img src="images/data/new_mexico/new_mexico%20(2).jpg" alt="">
+                        </figure>
+                    </div>
+                </div>
+
+                <h4>Matched points with RANSAC</h4>
+                <figure class="image fit">
+                    <img src="images/outputs/new_mexico/new_mexico%20(1)_new_mexico%20(2)_feature_matching.png" alt="">
+                </figure>
+
+                <h4>Automatic Stitching (and comparison with manual results)</h4>
+                <figure class="image fit">
+                    <img src="images/outputs/new_mexico/new_mexico_auto_mosaic_stage_1_result.png" alt="">
+                    <figcaption style="text-align: center">
+                        Result of <strong>automatic</strong> stitching.
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/new_mexico/new_mexico_mosaic_stage_1_result.png" alt="">
+                    <figcaption style="text-align: center">
+                        Result of <strong>manual</strong> stitching.
+                    </figcaption>
+                </figure>
+                <p>
+                    Look closely in the overlapping area.
+                    There is very little misalignment in the automatic stitching result, whereas the overlapping area is
+                    a bit blurry in the manual result.
+                    This shows that the automatic labeling and feature matching did a very precise job in locating and
+                    matching the features.
+                </p>
+
+                <h3 id="crater-auto">3. Meteor Crater National Landmark (photo by Yilun Ma)</h3>
+                <h4>Original Images</h4>
+                <div class="box alt">
+                    <div class="row gtr-50 gtr-uniform">
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/crater_cropped/crater_cropped%20(1).png" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/crater_cropped/crater_cropped%20(2).png" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/crater_cropped/crater_cropped%20(3).png" alt=""/>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Matched points with RANSAC</h4>
+                <figure class="image fit">
+                    <img src="images/outputs/crater_cropped/crater_cropped%20(1)_crater_cropped%20(2)_feature_matching.png"
+                         alt="">
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/crater_cropped/crater_cropped%20(2)_crater_cropped%20(3)_feature_matching.png"
+                         alt="">
+                </figure>
+
+                <h4>Automatic Stitching (and comparison with manual results)</h4>
+                <figure class="image fit">
+                    <img src="images/outputs/crater_cropped/crater_cropped_auto_mosaic_stage_1_result.png" alt="">
+                    <figcaption style="text-align: center">
+                        2-image <strong>automatic</strong> mosaic.
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/crater_cropped/crater_cropped_auto_mosaic_stage_2_result.png" alt="">
+                    <figcaption style="text-align: center">
+                        3-image <strong>automatic</strong> mosaic.
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/outputs/crater_cropped/crater_cropped_mosaic_stage_2_result.png" alt="">
+                    <figcaption style="text-align: center">
+                        3-image <strong>manual</strong> mosaic.
+                    </figcaption>
+                </figure>
+
+                <p>
+                    Similar to the example above, manual stitching is less precise than automatic stitching.
+                    While both results are quite acceptable, there are less ghosting in the automatically stitched
+                    image.
+                </p>
+
+
+                <h3 id="mpc-auto">4. Stitching together more images: MPC Lab</h3>
+                <h4>Original Images</h4>
+                <div class="box alt">
+                    <div class="row gtr-50 gtr-uniform">
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/mpc_lab/mpc_lab%20(1).jpg" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/mpc_lab/mpc_lab%20(2).jpg" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-4">
+                            <figure class="image fit">
+                                <img src="images/data/mpc_lab/mpc_lab%20(3).jpg" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-6">
+                            <figure class="image fit">
+                                <img src="images/data/mpc_lab/mpc_lab%20(4).jpg" alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-6">
+                            <figure class="image fit">
+                                <img src="images/data/mpc_lab/mpc_lab%20(5).jpg" alt=""/>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Matched points with RANSAC</h4>
+                <div class="box alt">
+                    <div class="row gtr-50 gtr-uniform">
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab%20(1)_mpc_lab%20(2)_feature_matching.png"
+                                     alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab%20(2)_mpc_lab%20(3)_feature_matching.png"
+                                     alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab%20(3)_mpc_lab%20(4)_feature_matching.png"
+                                     alt=""/>
+                            </figure>
+                        </div>
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab%20(4)_mpc_lab%20(5)_feature_matching.png"
+                                     alt=""/>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <h4>Automatic Stitching</h4>
+                <div class="box alt">
+                    <div class="row gtr-50 gtr-uniform">
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab_auto_mosaic_stage_1_result.png" alt=""/>
+                                <figcaption style="text-align: center">
+                                    2-image mosaic.
+                                </figcaption>
+                            </figure>
+                        </div>
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab_auto_mosaic_stage_2_result.png" alt=""/>
+                                <figcaption style="text-align: center">
+                                    3-image mosaic.
+                                </figcaption>
+                            </figure>
+                        </div>
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab_auto_mosaic_stage_3_result.png" alt=""/>
+                                <figcaption style="text-align: center">
+                                    4-image mosaic.
+                                </figcaption>
+                            </figure>
+                        </div>
+                        <div class="col-12">
+                            <figure class="image fit">
+                                <img src="images/outputs/mpc_lab_5/mpc_lab_auto_mosaic_stage_4_result.png" alt=""/>
+                                <figcaption style="text-align: center">
+                                    5-image mosaic.
+                                </figcaption>
+                            </figure>
+                        </div>
+                        <p>
+                            All images are mostly aligned at first sight, but note how the ghosting effect becomes
+                            increasingly significant as more images are stitched together, especially in the middle
+                            where there's the most overlapping.
+                            Furthermore, we noticed that the center of the image is well-aligned, but the ghosting
+                            becomes increasingly prominent near the upper and lower edges.
+                        </p>
+                        <p>
+                            One suspected reason is the distortion caused by the lenses, which is the most significant
+                            near the edges.
+                            Another reason is that the images were not taken with an iPhone without a tripod, meaning
+                            the center of projection is not exactly the same.
+                        </p>
+                    </div>
+                </div>
+            </section>
+            <section id="conclusion">
+                <header class="content">
+                    <h1>Concluding Thoughts</h1>
+                </header>
+                <p>
+                    The coolest thing I learned from this project is RANSAC.
+                    This is a perfect example of how the collective wisdom can surpass that of an expert.
+                    Also, this also gave me new inspirations on how to identify outliers to get better data.
+                </p>
+            </section>
+
+            <section>
+                <header class="content">
+                    <h2>Reference</h2>
+                    <ul>
+                        <li>
+                            <a href="https://docs.opencv.org/4.x/dc/d0d/tutorial_py_features_harris.html">Harris
+                                Interest Point Detector</a>.
+                        </li>
+                        <li>
+                            <a href="https://ieeexplore.ieee.org/document/1467310">M. Brown, R. Szeliski and S. Winder,
+                                "Multi-image matching using multi-scale oriented
+                                patches," 2005 IEEE Computer Society Conference on Computer Vision and Pattern
+                                Recognition
+                                (CVPR'05), San Diego, CA, USA, 2005, pp. 510-517 vol. 1, doi: 10.1109/CVPR.2005.235.</a>
+                        </li>
+                    </ul>
+
+                    HTML template: <a href="https://html5up.net/editorial">Editorial by HTML5UP</a>
+                </header>
             </section>
         </div>
     </div>
@@ -423,18 +816,42 @@
                     <h2>Menu</h2>
                 </header>
                 <ul>
-                    <li><a href="#annotation">Defining Correspondences</a></li>
-                    <li><a href="#midway">Mid-Way Face</a></li>
-                    <li><a href="#sequence">Morphing Sequence</a></li>
-                    <li><a href="#average">Mean Face</a></li>
-                    <li><a href="#caricature">Caricatures</a></li>
                     <li>
-                        <span class="opener">Bells and Whistles</span>
+                        <span class="opener">Part I</span>
                         <ul>
-                            <li><a href="#change">Changing Gender</a></li>
-                            <li><a href="#pca">PCA</a></li>
+                            <li><a href="#pictures">Shoot the Pictures</a></li>
+                            <li><a href="#homography">Recover Homographies</a></li>
+                            <li><a href="#rectify">Image Rectification</a></li>
+                            <li><a href="#blending">Blending Images into Mosaics</a></li>
+                            <li>
+                                <span class="opener">More Manual Stitching Results</span>
+                                <ul>
+                                    <li><a href="#marina-manual">San Francisco</a></li>
+                                    <li><a href="#nm-manual">Petroglyph National Monument</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
+                    <li>
+                        <span class="opener">Part II</span>
+                        <ul>
+                            <li><a href="#harris">Harris Corner Detector</a></li>
+                            <li><a href="#anms">ANMS</a></li>
+                            <li><a href="#descriptor">Feature Descriptors</a></li>
+                            <li><a href="#matching">Feature Matching</a></li>
+                            <li><a href="#ransac">RANSAC</a></li>
+                            <li><a href="#auto-mosaic">Producing Mosaics</a></li>
+                            <li>
+                                <span class="opener">More Auto-stitching Results</span>
+                                <ul>
+                                    <li><a href="#nm-auto">Petroglyph National Monument</a></li>
+                                    <li><a href="#crater-auto">Meteor Crater National Landmark</a></li>
+                                    <li><a href="#mpc-auto">MPC Lab</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#conclusion">Concluding Thoughts</a></li>
                 </ul>
             </nav>
 
