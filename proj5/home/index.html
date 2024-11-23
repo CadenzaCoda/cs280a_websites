@@ -1,0 +1,1573 @@
+<!DOCTYPE HTML>
+<!--
+	Editorial by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html lang="en">
+<head>
+    <title>Project 5 - Fun With Diffusion Models!</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="assets/css/main.css"/>
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+          }
+        });
+    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            type="text/javascript"></script>
+</head>
+<body class="is-preload">
+
+<!-- Wrapper -->
+<div id="wrapper">
+
+    <!-- Main -->
+    <div id="main">
+        <div class="inner">
+
+            <!-- Header -->
+            <header id="header">
+                <a href="index.html" class="logo"><strong>Project 5</strong> Fun With Diffusion Models!</a>
+            </header>
+
+            <!-- Banner -->
+            <section id="part1">
+                <div class="content">
+                    <header id="first">
+                        <h1>The power of Diffusion Models<br/>
+                        </h1>
+                    </header>
+                    <p>
+                        Diffusion models are trained for denoising by estimating the noise in a given input.
+                        They are widely applicable in image denoising, as well as image generation.
+                    </p>
+                    <p>
+                        In this project, we are using the <a href="https://huggingface.co/DeepFloyd/IF-I-XL-v1.0">DeepFloyd
+                        model by Huggingface</a>.
+                    </p>
+
+                    <header id="sampling_pretrained">
+                        <h2>Sampling from the Model</h2>
+                    </header>
+                    <p>
+                        Here are some images generated using the following prompts with different number of inference
+                        steps.
+                        The random seed is selected to be 180.
+                    </p>
+
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center"></th>
+                                <th style="text-align: center">An oil painting of a snowy mountain village</th>
+                                <th style="text-align: center">A man wearing a hat</th>
+                                <th style="text-align: center">A rocket ship</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th style="vertical-align: middle; text-align: center">5 inference steps</th>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/an%20oil%20painting%20of%20a%20snowy%20mountain%20village_5.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20man%20wearing%20a%20hat_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20rocket%20ship_5.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th style="vertical-align: middle; text-align: center">10 inference steps</th>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/an%20oil%20painting%20of%20a%20snowy%20mountain%20village_10.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20man%20wearing%20a%20hat_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20rocket%20ship_10.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th style="vertical-align: middle; text-align: center">20 inference steps</th>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/an%20oil%20painting%20of%20a%20snowy%20mountain%20village_20.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20man%20wearing%20a%20hat_20.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20rocket%20ship_20.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th style="vertical-align: middle; text-align: center">40 inference steps</th>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/an%20oil%20painting%20of%20a%20snowy%20mountain%20village_40.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20man%20wearing%20a%20hat_40.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/sampling/a%20rocket%20ship_40.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        Notice how the quality of the image increases as the number of inference steps increases,
+                        especially the details.
+                        Also, the images become more relevant to the text prompt and makes more sense in general with
+                        more inference steps.
+                    </p>
+
+                    <header id="forward">
+                        <h2>Forward Process</h2>
+                    </header>
+
+                    <p>
+                        In the forward process, we take a clean image and gradually add noise to it.
+                        More specifically, we add a zero-mean, i.i.d. Gaussian noise to each pixel of the image.
+                        This is equivalent to computing
+                        $$x_t = \sqrt{\bar{\alpha}_t} x_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon$$
+                        where $\epsilon \sim \mathcal{N} (0, 1)$.
+                        In the DeepFloyd model, $T \in [0, 999]$.
+                    </p>
+                    <p>
+                        We take an image of the Campanile as an example and show the noisy image at $T \in \{250, 500,
+                        750\}$.
+                        This example shows that the image gradually becomes pure noise as $T$ increases.
+                    </p>
+                    <figure class="image fit">
+                        <img src="images/forward_process/campanile.png" alt="">
+                        <figcaption style="text-align: center">Forward process at various noise levels.</figcaption>
+                    </figure>
+
+                    <header id="classical">
+                        <h2>Classical Denoising</h2>
+                    </header>
+                    <p>
+                        Recall that a Gaussian filter removes the high-frequency components of an image.
+                        Since the Gaussian noise is of higher frequency than the elements in the original image, we can
+                        mitigate the noise by applying a Gaussian filter.
+                    </p>
+                    <figure class="image fit">
+                        <img src="images/classical_denoising/campanille_denoised.png" alt="">
+                        <figcaption style="text-align: center">Denoising with Gaussian Blurring</figcaption>
+                    </figure>
+                    <p>
+                        The result is clearly not ideal, especially for the cases with higher noise levels.
+                        This is because the Gaussian filter also caused loss of high-frequency information in the
+                        original image.
+                    </p>
+
+                    <header id="one_step">
+                        <h2>One-Step Denoising</h2>
+                    </header>
+                    <p>
+                        Now, we use the pretrained diffusion model for the denoising task.
+                        The DeepFloyd model is trained with both time conditioning and text conditioning, which takes
+                        the time $T$ and a text embedding as a conditioning signal.
+                        Here, we simply use the embedding <code>a high quality photo</code> as an "empty" prompt.
+                    </p>
+                    <p>
+                        We apply the model at various time $T$ to estimate the noise in the image, and recover the clean
+                        image with the same formula as in the forward process.
+                    </p>
+                    <p>
+                        The results are as follows.
+                        Notice that the model is also "editing" the image a little bit to create another version of
+                        Campanile that also makes sense.
+                    </p>
+                    <figure class="image fit">
+                        <img src="images/one_step_denoising/campanile_one_step_denoised_750.png" alt="">
+                        <figcaption style="text-align: center">One-step denoising with the DeepFloyd Model.</figcaption>
+                    </figure>
+
+                    <header id="iterative">
+                        <h2>Iterative Denoising</h2>
+                    </header>
+                    <p>
+                        Although the one-step denoising did a reasonable job, the result is still not ideal when the
+                        image is especially noisy.
+                        However, note that diffusion models are trained to denoise the image iteratively.
+                        Instead of trying to remove all the noise in one step, we do the reverse of the forward process
+                        by removing the noise little by little.
+                    </p>
+                    <p>
+                        <!--                        The process is somewhat similar to the Newton-Raphson's method for root-finding.-->
+                        In the iteration at time $t$, we use the one-step denoising to estimate the clean image
+                        $\hat{x}_0$ based the noisy image $x_t$ and the noise level at time $t$.
+                        Then, we get the estimation of the previous time-step by taking a linear combination of the
+                        noisy image,
+                        $$x_{t'} = \frac{\sqrt{\bar{\alpha}_{t'}} \beta_t}{1 - \bar{\alpha}_t}x_0 +
+                        \frac{\sqrt{\alpha_t} (1 - \bar{\alpha}_{t'})}{1 - \bar{\alpha}_t}x_t + v_\sigma$$
+                        where $\bar{\alpha}_t$ is related to the noise schedule, which we will stick to the design
+                        choice behind the DeepFloyd model.
+                        $v_\sigma$ is the estimated variance to add back into the image.
+                    </p>
+                    <p>
+                        Also, to speed up the process, it turns out we can skip some of the timesteps.
+                        Here, we use a strided timestep with step size 30.
+                    </p>
+                    <p>
+                        The result of the iterative denoising is as follows.
+                        Compared side-by-side with the results of previous methods, the iterative denoising has by far
+                        the best performance.
+                    </p>
+                    <figure class="image fit">
+                        <img src="images/iterative_denoising/campanile_animation.gif" alt="">
+                        <figcaption style="text-align: center">Iterative denoising process animated.</figcaption>
+                    </figure>
+
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">$t=90$</th>
+                                <th style="text-align: center">$t=240$</th>
+                                <th style="text-align: center">$t=390$</th>
+                                <th style="text-align: center">$t=540$</th>
+                                <th style="text-align: center">$t=690$</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_intermediate_90.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_intermediate_240.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_intermediate_390.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_intermediate_540.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_intermediate_690.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <td style="text-align: center"><strong>Original</strong></td>
+                                <td style="text-align: center"><strong>Iterative Denoised Campanile</strong></td>
+                                <td style="text-align: center"><strong>One-step Denoised Campanile</strong></td>
+                                <td style="text-align: center"><strong>Gaussian-Blurred Campanile</strong></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/original.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_iterative_result.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_one_step.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/iterative_denoising/campanile_blur_filtered.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <header id="sampling">
+                        <h2>Diffusion Model Sampling</h2>
+                    </header>
+                    <p>
+                        Similar to <a href="#sampling_pretrained">what we did in the beginning</a>,
+                        we can also use the diffusion model to denoise an image that contains nothing but pure noise.
+                    </p>
+                    <p>
+                        Below are some results.
+                    </p>
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">Sample 1</th>
+                                <th style="text-align: center">Sample 2</th>
+                                <th style="text-align: center">Sample 3</th>
+                                <th style="text-align: center">Sample 4</th>
+                                <th style="text-align: center">Sample 5</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/diffusion_model_sampling/Sample_0_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/diffusion_model_sampling/Sample_1_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/diffusion_model_sampling/Sample_2_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/diffusion_model_sampling/Sample_3_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/diffusion_model_sampling/Sample_4_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p>
+                        We can see that some of the images generated from pure noise are not so good.
+                    </p>
+
+                    <header id="cfg">
+                        <h2>Classifier-free Guidance</h2>
+                    </header>
+                    <p>
+                        To improve the quality of the generated images, we borrow the idea from caricature generation.
+                        In each iteration of the denoising process, we additionally estimate the noise with a truly
+                        empty
+                        prompt, and "push" the image towards the "realistic" manifold, i.e.,
+                        $$\epsilon = \epsilon_u + \gamma (\epsilon_c - \epsilon_u)$$
+                        where $\epsilon_u$ is the estimated noise with an empty prompt, a.k.a. the unconditioned noise
+                        estimation, while $\epsilon_c$ is the noise estimated with our prompt, a.k.a. the conditioned
+                        noise
+                        estimation.
+                        This trick is known as <strong>Classifier-free Guidance</strong> (CFG), and its strength is
+                        controlled by the $\gamma$.
+                    </p>
+                    <p>
+                        Below are some results generated with CFG.
+                    </p>
+
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">Sample 1</th>
+                                <th style="text-align: center">Sample 2</th>
+                                <th style="text-align: center">Sample 3</th>
+                                <th style="text-align: center">Sample 4</th>
+                                <th style="text-align: center">Sample 5</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/classifier_free_guidance/Sample_0_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/classifier_free_guidance/Sample_1_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/classifier_free_guidance/Sample_2_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/classifier_free_guidance/Sample_3_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/classifier_free_guidance/Sample_4_animation.gif" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <header id="img2img_translation">
+                        <h2>Image-to-Image Translation</h2>
+                    </header>
+                    <p>
+                        As mentioned in the previous section, the denoiser doesn't usually revert the image back to its
+                        clean version, but performs some reasonable "editing" as well.
+                        Utilizing this fact, we can intentionally add some noise to the image and pass it into the
+                        diffusion
+                        model.
+                        This follows the <a href="https://sde-image-editing.github.io/">SDEdit</a> algorithm.
+                    </p>
+                    <p>
+                        Here we inject different levels of noise into the campanile image, and here are the results.
+                        Not surprisingly, the larger the noise level, the more significant the edit.
+                    </p>
+
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">i_start=1</th>
+                                <th style="text-align: center">i_start=3</th>
+                                <th style="text-align: center">i_start=5</th>
+                                <th style="text-align: center">i_start=7</th>
+                                <th style="text-align: center">i_start=10</th>
+                                <th style="text-align: center">i_start=20</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/img2img_translation/results/Campanile_istart_1_result.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/img2img_translation/results/Campanile_istart_3_result.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/img2img_translation/results/Campanile_istart_5_result.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/img2img_translation/results/Campanile_istart_7_result.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/img2img_translation/results/Campanile_istart_10_result.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/img2img_translation/results/Campanile_istart_20_result.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <header id="editing">
+                        <h2>
+                            Editing Hand-Drawn and Web Images
+                        </h2>
+                    </header>
+                    <p>
+                        Let's apply this on some other images we can find on the web.
+                    </p>
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">i_start=1</th>
+                                <th style="text-align: center">i_start=3</th>
+                                <th style="text-align: center">i_start=5</th>
+                                <th style="text-align: center">i_start=7</th>
+                                <th style="text-align: center">i_start=10</th>
+                                <th style="text-align: center">i_start=20</th>
+                                <th style="text-align: center">Original</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im_1.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im_3.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im_7.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im_20.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/web_im.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p>
+                        It is even possible to draw a sketch by hand and have it rendered into a realistic image.
+                        Here are some examples.
+                    </p>
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">i_start=1</th>
+                                <th style="text-align: center">i_start=3</th>
+                                <th style="text-align: center">i_start=5</th>
+                                <th style="text-align: center">i_start=7</th>
+                                <th style="text-align: center">i_start=10</th>
+                                <th style="text-align: center">i_start=20</th>
+                                <th style="text-align: center">Original</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage_1.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage_3.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage_7.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage_20.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/myImage.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/myImage_1.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/myImage_3.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/myImage_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/myImage_7.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/myImage_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/myImage_20.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/piano.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <header id="inpainting">
+                        <h2>Inpainting</h2>
+                    </header>
+                    <p>
+                        We can also limit the editing to a specific region, following the idea in the <a
+                            href="https://arxiv.org/abs/2201.09865">InPainting</a> paper.
+                        We define a binary mask with the same shape as the spatial dimensions of the image.
+                        In each iteration of CFG, we "force" the pixels outside the editing area to be the ground truth
+                        plus
+                        the correct amount of noise.
+                        In other words,
+                        $$x_t \gets \mathbb{m} x_t + (1 - \mathbb{m}) \mathrm{forward}(x_{orig}, t)$$
+                        This maintains the correct noise level at each timestep, while ensuring only the editing area
+                        gets
+                        modified.
+                    </p>
+                    <p>
+                        Below are some examples of the output of the InPainting algorithm.
+                    </p>
+
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">Original</th>
+                                <th style="text-align: center">Mask</th>
+                                <th style="text-align: center">Region to Edit</th>
+                                <th style="text-align: center">Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/campanile/campanile.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/campanile/mask.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/campanile/region.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/campanile/result.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/statue_of_liberty/statue_of_liberty.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/statue_of_liberty/statue_of_liberty_mask.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/statue_of_liberty/statue_of_liberty_to_replace.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/statue_of_liberty/statue_of_liberty_inpainting.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/study_room/study_room.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/study_room/study_room_mask.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/study_room/study_room_to_replace.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/inpainting/study_room/study_room_inpainting.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <header id="txt_cond_translation">
+                        <h2>Text-Conditional Image-to-image Translation</h2>
+                    </header>
+                    <p>
+
+                    </p>
+
+
+                    <p>
+                        So far, we've been only using the "empty" prompt <code>a high quality photo</code>.
+                        However, if the prompt contains specific descriptions, we can modify the content of the photo.
+
+                    </p>
+                    <p>
+                        We adopt a similar algorithm as SEdit, but this time using various different prompts.
+                        Some examples of the results are shown below.
+                    </p>
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">Prompt</th>
+                                <th style="text-align: center">i_start=1</th>
+                                <th style="text-align: center">i_start=3</th>
+                                <th style="text-align: center">i_start=5</th>
+                                <th style="text-align: center">i_start=7</th>
+                                <th style="text-align: center">i_start=10</th>
+                                <th style="text-align: center">i_start=20</th>
+                                <th style="text-align: center">Original</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle">a rocket ship</th>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/rocket_ship_1.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/rocket_ship_3.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/rocket_ship_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/rocket_ship_7.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/rocket_ship_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/rocket_ship_20.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/text_conditional_translation/campanile.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th style="text-align: center; vertical-align: middle">A violently erupting volcano</th>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/volcano_1.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/volcano_3.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/volcano_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/volcano_7.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/volcano_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/volcano_20.png" alt=""></figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img src="images/text_conditional_translation/teapot.png"
+                                                                   alt=""></figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th style="vertical-align: middle; text-align: center">A tropical forest</th>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/forest_1.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/forest_3.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/forest_5.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/forest_7.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/forest_10.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/forest_20.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit"><img
+                                            src="images/text_conditional_translation/city_skyline.jpg" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tbody>
+                            <tr>
+                                <th style="vertical-align: middle; text-align: center">A Steinway nine-foot grand
+                                    piano
+                                </th>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano_prompted/myImage_1.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano_prompted/myImage_3.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano_prompted/myImage_5.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano_prompted/myImage_7.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano_prompted/myImage_10.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano_prompted/myImage_20.png"
+                                             alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/editing_harddrawn_or_web_imgs/piano/piano.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <header id="anagrams">
+                        <h2>Visual Anagrams</h2>
+                    </header>
+                    <p>
+                        With the diffusion model, we can also create multi-view optical illusions with ideas from <a
+                            href="https://dangeng.github.io/visual_anagrams/">Visual Anagrams</a> paper.
+                    </p>
+                    <p>
+                        Starting from an image with pure noise, we run the denoising algorithm with the noisy image
+                        using the first prompt, and in the same time use a second prompt on the same image flipped
+                        up-side-down.
+                        The estimated noise at each timestep is the average of the two inferred noise.
+                        In other words,
+                        $$\epsilon_1 = \mathrm{UNet}(x_t, t, p_1)$$
+                        $$\epsilon_2 = \mathrm{flip}(\mathrm{UNet}(\mathrm{flip}(x_t), t, p_2))$$
+                        $$\epsilon = (\epsilon_1 + \epsilon_2) / 2$$
+                    </p>
+                    <p>
+                        Below are some visual anagrams created using this algorithm.
+                        Hover on the image to rotate it upside down.
+                    </p>
+
+                    <div class="flip-container">
+                        <figure>
+                            <img src="images/anagrams/results/anagram.png" alt="" class="flip-this">
+                            <figcaption><strong>Right side up:</strong> an oil painting of people around a campfire;
+                                <br><strong>Upside-down:</strong> an oil painting of an old man
+                            </figcaption>
+                        </figure>
+                    </div>
+
+                    <div class="flip-container">
+                        <figure>
+                            <img src="images/anagrams/results/anagram_hipster_village.png" alt="" class="flip-this">
+                            <figcaption><strong>Right side up:</strong> a photo of a hipster barista; <br><strong>Upside
+                                down:</strong> an oil painting of a snowy mountain village
+                            </figcaption>
+                        </figure>
+                    </div>
+
+                    <div class="flip-container">
+                        <figure><img src="images/anagrams/results/anagram_dog_man.png" alt="" class="flip-this">
+                            <figcaption><strong>Right side up:</strong> a photo of a dog; <br><strong>Upside
+                                down: </strong> a photo of a man
+                            </figcaption>
+                        </figure>
+                    </div>
+
+                    <header id="hybrid">
+                        <h2>Hybrid Images</h2>
+                    </header>
+                    <p>
+                        Another type of visual illusion are images that look different when viewed from up close and
+                        from afar.
+                        For this type of illusion, we implement the <a href="https://arxiv.org/abs/2404.11615">Factorized
+                        Diffusion</a>.
+                        The algorithm is
+                        $$\epsilon_1 = \mathrm{UNet}(x_t, t, p_1)$$
+                        $$\epsilon_2 = \mathrm{UNet}(x_t, t, p_2)$$
+                        $$\epsilon = f_{\mathrm{lowpass}}(\epsilon_1) + f_{\mathrm{highpass}}(\epsilon_2)$$
+                        where $f_{\mathrm{lowpass}}$ and $f_{\mathrm{highpass}}$ are low pass and high pass functions,
+                        respectively.
+                        Here, the low pass function is the Gaussian Blur with the kernel size of 33 and sigma of 2, and
+                        the high pass function is the Laplacian filter with the same kernel size and sigma.
+                        $p_1$ and $p_2$ are two different prompts for the hybrid image.
+                    </p>
+                    <p>
+                        Below are some results.
+                    </p>
+                    <div class="table-wrapper">
+                        <table style="table-layout: fixed">
+                            <thead>
+                            <tr>
+                                <th style="text-align: center">Hybrid image of a skull and a waterfall</th>
+                                <th style="text-align: center">Hybrid image of the Amalfi coast and people around a
+                                    campfire
+                                </th>
+                                <th style="text-align: center">Hybrid image of a snowy mountain village and a dog</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/hybrid/results/hybrid_skull_waterfalls.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/hybrid/results/hybrid_coast_campfire.png" alt="">
+                                    </figure>
+                                </td>
+                                <td>
+                                    <figure class="image fit">
+                                        <img src="images/hybrid/results/hybrid_village_dog.png" alt="">
+                                    </figure>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="part2">
+                <div class="content">
+                    <header id="second"><h1>Diffusion Models from scratch!</h1></header>
+                </div>
+                <p>
+                    Now let's try to implement a diffusion model of our own.
+                    In this project, we use the MNIST digit dataset to train a diffusion model to generate handwritten
+                    digits.
+                </p>
+
+                <header id="uncond">
+                    <h2>Implementing the UNet</h2>
+                </header>
+                <p>
+                    Our diffusion model is a simple <a href="https://arxiv.org/abs/1505.04597">UNet</a>, which consists
+                    of an encoder structure and a decoder structure.
+                    The architecture we implemented is shown in the figure below.
+                </p>
+                <figure class="image fit">
+                    <img src="images/unconditional_arch.png" alt="">
+                    <figcaption style="text-align: center">The UNet architecture implemented in this section
+                    </figcaption>
+                </figure>
+
+                <header id="prep_dataset">
+                    <h2>Preparing the dataset</h2>
+                </header>
+                <p>
+                    To train our denoiser, we first need to generate a dataset by adding noise to the images in the
+                    MNIST dataset.
+                    For each training batch, we take the clean images $x$ and perform
+                    $$z = x + \sigma \epsilon$$
+                    to get the noisy images.
+                    Here, $\sigma$ is a noise level that we can choose.
+                    $\epsilon \sim \mathcal{N}(0, \mathcal{I})$ is the pixel-wise Gaussian noise.
+                </p>
+                <p>
+                    Below are some examples of noisy images with different noise levels.
+                </p>
+                <figure class="image fit">
+                    <img src="images/dataset_visualization.png" alt="">
+                    <figcaption style="text-align: center">Visualization of various noise levels on MNIST digits.
+                    </figcaption>
+                </figure>
+
+                <header id="training_uncond">
+                    <h2>Training the Denoiser</h2>
+                </header>
+                <p>
+                    Now, we train the model on the dataset.
+                    For this section, we select $\sigma = 0.5$ in the noising process.
+                    Note that the images are noised when fetched from the dataloader, so that the noise is different
+                    each time.
+                    The dataset is shuffled with a batch size of 256, and we train on the dataset for 5 epochs.
+                    The optimizer is selected to be Adam, with a learning rate of $10^{-4}$.
+                </p>
+                <figure class="image fit">
+                    <img src="images/denoiser_training_losses.png" alt="">
+                    <figcaption style="text-align: center">Training loss curve for the denoiser. The loss is reported
+                        every 10 mini-batches.
+                    </figcaption>
+                </figure>
+                <p>
+                    Here are the results of outputs on the noised digits in the testing set.
+                </p>
+                <figure class="image fit">
+                    <img src="images/denoiser_testing_epoch_0.png" alt="">
+                    <figcaption style="text-align: center">Results on the digits from the test set after 1 epoch of
+                        training.
+                    </figcaption>
+                </figure>
+                <figure class="image fit">
+                    <img src="images/denoiser_testing_epoch_4.png" alt="">
+                    <figcaption style="text-align: center">Results on the digits from the test set after 5 epochs of
+                        training.
+                    </figcaption>
+                </figure>
+
+                <header id="ood_testing">
+                    <h2>Out-of-Distribution Testing</h2>
+                </header>
+                <p>
+                    We can also test the performance of our denoiser on images with other noise levels to validate its
+                    performance on out-of-distribution test cases.
+                </p>
+                <figure class="image fit">
+                    <img src="images/denoiser_test.png" alt="">
+                    <figcaption>Results on the digits from the test set with various noise levels.</figcaption>
+                </figure>
+                <p>
+                    We can see that the model did reasonably well on noise levels below $\sigma=0.5$, but the
+                    performance starts to degenerate as the noise level increases.
+                    In the following section, we will explore ways to remedy for this.
+                </p>
+
+                <header id="time_cond">
+                    <h2>Adding Time Conditioning to UNet</h2>
+                </header>
+                <p>
+                    To enable denoising at various noise levels, we need to somehow inject the time $t$ as a
+                    conditioning signal into our UNet.
+                    One way to modify the model is as follows.
+                </p>
+                <figure class="image fit">
+                    <img src="images/conditional_arch.png" alt="">
+                    <figcaption style="text-align: center">Time-conditioned UNet</figcaption>
+                </figure>
+                <p>
+                    Here, since our dataset is simple, we can get decent performance with $T=300$.
+                    The time $t \in [0, 300]$ is normalized into a value between $[0, 1]$ before embedding.
+                </p>
+
+                <header id="training_time_cond">
+                    <h2>Training the time-conditioned UNet</h2>
+                </header>
+                <p>
+                    The training process is mostly similar to the unconditioned UNet, as described <a
+                        href="#training_uncond"></a> above.
+                    However, this time we estimate the noise in the image instead of the clean image directly.
+                    We use the same forward process as described in the <a href="#forward">previous section</a> to add
+                    noise to the image, and the task is now to regress the model to predict the noise.
+                </p>
+                <p>
+                    Additionally, we use an exponential learning rate schedule, with a gamma of $0.1^{(1.0 /
+                    \mathrm{num\_epochs})}$.
+                </p>
+                <figure class="image fit">
+                    <img src="images/ddpm_time_training_losses.png" alt="">
+                    <figcaption style="text-align: center">Time-Conditioned UNet training loss curve. The loss is
+                        reported every 10 mini-batches.
+                    </figcaption>
+                </figure>
+
+                <header id="sampling_time_cond">
+                    <h2>Sampling from the Time-conditioned UNet</h2>
+                </header>
+                <p>
+                    The sampling process is also similar to the <a href="#sampling">previous section</a>.
+                    Here are some results from various epochs.
+                    Hover the mouse on the image to freeze on the results.
+                </p>
+
+                <div class="table-wrapper">
+                    <table style="table-layout: fixed">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 1</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_time_conditioned_samples_1.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_time_conditioned_samples_1.png'"
+                                         onmouseout="this.src='images/ddpm_time_conditioned_samples_1.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 5</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_time_conditioned_samples_5.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_time_conditioned_samples_5.png'"
+                                         onmouseout="this.src='images/ddpm_time_conditioned_samples_5.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 10</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_time_conditioned_samples_10.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_time_conditioned_samples_10.png'"
+                                         onmouseout="this.src='images/ddpm_time_conditioned_samples_10.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 15</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_time_conditioned_samples_15.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_time_conditioned_samples_15.png'"
+                                         onmouseout="this.src='images/ddpm_time_conditioned_samples_15.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 20</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_time_conditioned_samples_20.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_time_conditioned_samples_20.png'"
+                                         onmouseout="this.src='images/ddpm_time_conditioned_samples_20.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <header id="class_cond">
+                    <h2>Adding Class-Conditioning to UNet</h2>
+                </header>
+                <p>
+                    Borrowing from the idea in <a href="#cfg">Classifier-free Guidance</a>, we can also pass in
+                    the
+                    class type as an additional conditioning signal to generate images that look more like real
+                    digits.
+                    Therefore, we add the class embedding layers to the models, and treat the embeddings as
+                    another
+                    conditioning signal in the decoder side of the UNet.
+                </p>
+                <p>
+                    In addition, recall that CFG also requires the model to be able to perform unconditioned
+                    inference,
+                    i.e. without any class-conditioning signal.
+                    In addition to the embedding layers, we randomly set the conditioning signal to be all zeros
+                    during
+                    the training.
+                </p>
+                <figure class="image fit">
+                    <img src="images/ddpm_class_training_losses.png" alt="">
+                    <figcaption style="text-align: center">Class-conditioned UNet training loss curve. The loss is
+                        reported every 10 mini-batches.
+                    </figcaption>
+                </figure>
+
+                <header id="sampling_class_cond">
+                    <h2>Sampling from the Class-Conditioned UNet</h2>
+                </header>
+                <p>
+                    The sampling process is similar to the one in <a href="#cfg">the previous section</a>.
+                    Here, we use $\gamma = 5$ and visualize the outputs of the sampled images at various epochs.
+                </p>
+                <p>
+                    <strong>Hint: Hover the mouse on the image to freeze the frame on the result.</strong>
+                </p>
+
+                <div class="table-wrapper">
+                    <table style="table-layout: fixed">
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 1</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_class_conditioned_samples_1.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_class_conditioned_samples_1.png'"
+                                         onmouseout="this.src='images/ddpm_class_conditioned_samples_1.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 5</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_class_conditioned_samples_5.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_class_conditioned_samples_5.png'"
+                                         onmouseout="this.src='images/ddpm_class_conditioned_samples_5.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 10</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_class_conditioned_samples_10.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_class_conditioned_samples_10.png'"
+                                         onmouseout="this.src='images/ddpm_class_conditioned_samples_10.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 15</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_class_conditioned_samples_15.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_class_conditioned_samples_15.png'"
+                                         onmouseout="this.src='images/ddpm_class_conditioned_samples_15.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <thead>
+                        <tr>
+                            <th style="text-align: center">Epoch 20</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <figure class="image fit">
+                                    <img src="images/ddpm_class_conditioned_samples_20.gif" alt=""
+                                         onmouseover="this.src='images/ddpm_class_conditioned_samples_20.png'"
+                                         onmouseout="this.src='images/ddpm_class_conditioned_samples_20.gif'"
+                                    >
+                                </figure>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <header class="content">
+                    <h2>Reference</h2>
+                    <ul>
+                        <li><a href="https://huggingface.co/DeepFloyd/IF-I-XL-v1.0">DeepFloyd model by Huggingface</a></li>
+                        <li><a href="https://sde-image-editing.github.io/">SDEdit</a></li>
+                        <li><a href="https://arxiv.org/abs/2201.09865">InPainting</a></li>
+                        <li><a href="https://dangeng.github.io/visual_anagrams/">Visual Anagrams</a></li>
+                        <li><a href="https://arxiv.org/abs/2404.11615">Factorized Diffusion</a></li>
+                        <li><a href="https://arxiv.org/abs/1505.04597">UNet</a></li>
+                    </ul>
+                    HTML template: <a href="https://html5up.net/editorial">Editorial by HTML5UP</a>
+                </header>
+            </section>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div class="inner">
+            <!-- Menu -->
+            <nav id="menu">
+                <header class="major">
+                    <h2>Menu</h2>
+                </header>
+                <ul>
+                    <li>
+                        <span class="opener">Part I: The Power of Diffusion Models</span>
+                        <ul>
+                            <li><a href="#sampling_pretrained">Sampling from the Model</a></li>
+                            <li><a href="#forward">Forward Process</a></li>
+                            <li><a href="#classical">Classical Denoising</a></li>
+                            <li><a href="#one_step">One-Step Denoising</a></li>
+                            <li><a href="#iterative">Iterative Denoising</a></li>
+                            <li><a href="#sampling">Diffusion Model Sampling</a></li>
+                            <li><a href="#cfg">Classifier-free Guidance</a></li>
+                            <li><span class="opener">Image-to-Image Translation</span>
+                                <ul>
+                                    <li><a href="#img2img_translation">Image-to-image Translation</a></li>
+                                    <li><a href="#editing">Editing Hand-Drawn and Web Images</a></li>
+                                    <li><a href="#inpainting">Inpainting</a></li>
+                                    <li><a href="#txt_cond_translation">Text-Conditional Image-to-image Translation</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a href="#anagrams">Visual Anagrams</a></li>
+                            <li><a href="#hybrid">Hybrid Images</a></li>
+                        </ul>
+                    </li>
+                    <li><span class="opener">Part II: Diffusion Models from scratch</span>
+                        <ul>
+                            <li><span class="opener">UNconditioned UNet</span>
+                                <ul>
+                                    <li><a href="#uncond">Implementing the UNet</a></li>
+                                    <li><a href="#prep_dataset">Preparing the Dataset</a></li>
+                                    <li><a href="#training_uncond">Training the Denoiser</a></li>
+                                    <li><a href="#ood_testing">Out-of-Distribution Testing</a></li>
+                                </ul>
+                            </li>
+                            <li><span class="opener">Time-Conditioned UNet</span>
+                                <ul>
+                                    <li><a href="#time_cond">Adding Time Conditioning to UNet</a></li>
+                                    <li><a href="#training_time_cond">Training the Time-conditioned UNet</a></li>
+                                    <li><a href="#sampling_time_cond">Sampling from the Time-conditioned UNet</a></li>
+                                </ul>
+                            </li>
+                            <li><span class="opener">Class-Conditioned UNet</span>
+                                <ul>
+                                    <li><a href="#class_cond">Adding Class-Conditioning to UNet</a></li>
+                                    <li><a href="#sampling_class_cond">Sampling from the Class-Conditioned UNet</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Section -->
+            <section>
+                <header class="major">
+                    <h2>Author</h2>
+                </header>
+                <p>Shengfan Cao</p>
+                <p>Ph.D. student in Mechanical Engineering</p>
+                <p>Lab Affiliation: Model Predictive Control Lab</p>
+                <ul class="contact">
+                    <li class="icon solid fa-envelope"><a href="#">shengfan_cao@berkeley.edu</a></li>
+                    <li class="icon solid fa-phone">(510) 946-0740</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/browser.min.js"></script>
+<script src="assets/js/breakpoints.min.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
